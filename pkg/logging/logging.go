@@ -24,7 +24,9 @@ func InitLogger(config *LogConfig) {
 	logInit.Do(func() {
 		SetLevel(config.Level)
 		SetFormat(config.Format)
-		SetOutput(config.Output)
+		if err := SetOutput(config.Output); err != nil {
+			log.Fatalf("Failed to ste logging output: %v", err)
+		}
 	})
 }
 

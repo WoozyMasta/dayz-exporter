@@ -1,0 +1,81 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build and Release Binaries
+    runs-on: ubuntu-latest
+
+    env:
+      BIN_NAME: dayz-exporter
+      UPX_VERSION: 4.2.4
+      WORK_DIR: cli
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run base workflow
+        uses: ./.github/actions/base
+        with:
+          go-version: '1.23'
+
+      - name: Install dependencies
+        run: ./tools/dependencies.sh
+
+      - name: Build
+        run: ./tools/build.sh
+
+      - name: Set image tag
+        id: env
+        run: |
+          echo "image_tag=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to GitHub Container registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log in to Docker Hub Container registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push container image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            ghcr.io/woozymasta/dayz-exporter:${{ steps.env.outputs.image_tag }}
+            ghcr.io/woozymasta/dayz-exporter:latest
+            docker.io/woozymasta/dayz-exporter:${{ steps.env.outputs.image_tag }}
+            docker.io/woozymasta/dayz-exporter:latest
+
+      - name: Extract changelog
+        id: changelog
+        run: ./tools/release_notes.sh > release.md
+
+      - name: Create GitHub release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          bodyFile: release.md
+          artifacts: ./build/*

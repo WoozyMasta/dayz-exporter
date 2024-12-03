@@ -1,0 +1,14 @@
+remote_theme: pages-themes/midnight@v0.2.0
+plugins:
+- jekyll-remote-theme
+show_downloads: true
+logo: /logo.png
+title: ./dayz-exporter
+description: DayZ Prometheus Metrics Exporter
+markdown: GFM
+github:
+  zip_url: https://github.com/WoozyMasta/dayz-exporter/zipball/master
+  tar_url: https://github.com/WoozyMasta/dayz-exporter/tarball/master
+  linux: https://github.com/WoozyMasta/dayz-exporter/releases/latest/download/dayz-exporter-linux-amd64
+  darwin: https://github.com/WoozyMasta/dayz-exporter/releases/latest/download/dayz-exporter-darwin-arm64
+  windows: https://github.com/WoozyMasta/dayz-exporter/releases/latest/download/dayz-exporter-windows-amd64.exe

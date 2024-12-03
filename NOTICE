@@ -1,0 +1,8 @@
+This project makes use of third-party software licensed under the Apache License, Version 2.0.
+A copy of the Apache License, Version 2.0, is included in the LICENSE-THIRD-PARTY file.
+
+Specific projects included:
+- geoip2-golang (https://github.com/oschwald/geoip2-golang) licensed under Apache 2.0.
+- prometheus/client_golang (https://github.com/prometheus/client_golang) licensed under Apache 2.0.
+- sethvargo/go-envconfig (https://github.com/sethvargo/go-envconfig) licensed under Apache 2.0.
+- gopkg.in/yaml.v3 (https://gopkg.in/yaml.v3) licensed under Apache 2.0.

@@ -28,10 +28,10 @@ jobs:
           go-version: '1.23'
 
       - name: Install dependencies
-        run: ./tools/dependencies.sh
+        run: bash ./tools/dependencies.sh
 
       - name: Build
-        run: ./tools/build.sh
+        run: bash ./tools/build.sh
 
       - name: Set image tag
         id: env
@@ -70,7 +70,7 @@ jobs:
 
       - name: Extract changelog
         id: changelog
-        run: ./tools/release_notes.sh > release.md
+        run: awk -f ./tools/release_notes.awk > release.md
 
       - name: Create GitHub release
         uses: ncipollo/release-action@v1

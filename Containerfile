@@ -5,7 +5,10 @@ ARG VERSION=0.0.0
 ARG COMMIT=nil
 ARG UPX_VERSION=4.2.4
 
+# hadolint ignore=DL3008
 RUN set -xeu; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends xz-utils curl; \
     curl -#Lo upx.tar.xz \
         "https://github.com/upx/upx/releases/download/v$UPX_VERSION/upx-$UPX_VERSION-${ARCH}_linux.tar.xz"; \
     tar -xvf upx.tar.xz --strip-components=1 "upx-$UPX_VERSION-${ARCH}_linux/upx"; \
@@ -22,7 +25,9 @@ ENV GOOS=linux
 ENV GOFLAGS="-buildvcs=false -trimpath"
 ENV GOARCH=$ARCH
 
-COPY cli pkg .
+COPY ./cli ./cli
+COPY ./pkg ./pkg
+
 RUN set -eux;\
     pkg="$(grep -Po 'module \K.*$' go.mod)/pkg/config"; \
     version="$pkg.Version=$VERSION"; \

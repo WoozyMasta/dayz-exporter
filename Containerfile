@@ -22,7 +22,7 @@ ENV GOOS=linux
 ENV GOFLAGS="-buildvcs=false -trimpath"
 ENV GOARCH=$ARCH
 
-COPY cmd pkg .
+COPY cli pkg .
 RUN set -eux;\
     pkg="$(grep -Po 'module \K.*$' go.mod)/pkg/config"; \
     version="$pkg.Version=$VERSION"; \

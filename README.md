@@ -1,4 +1,5 @@
-# DayZ Prometheus Metrics Exporter<!-- omit in toc -->
+<!-- omit in toc -->
+# DayZ Prometheus Metrics Exporter
 
 Collects and publishes Prometheus metrics from Battleye RCON and
 Steam A2S Query for DayZ server.
@@ -26,7 +27,14 @@ environment.
 * [Visualize in Grafana](#visualize-in-grafana)
 * [Support me ☕](#support-me-)
 
-![dashboard]
+<!-- markdownlint-disable MD033 -->
+<center>
+
+> ![dashboard]  
+> grafana dashboard example
+
+</center>
+<!-- markdownlint-enable MD033 -->
 
 ## Configuration
 
@@ -76,7 +84,7 @@ If you use both, comment out the options in YAML that you wish to override
 using environment variables.
 
 ```bash
-DAYZ_EXPORTER_RCON_PASSWORD=strong %[1]s config.yaml
+DAYZ_EXPORTER_RCON_PASSWORD=strong ./dayz-exporter config.yaml
 ```
 
 For more information on configuration parameters, refer to the example
@@ -85,27 +93,30 @@ configuration files (YAML and .env).
 ## Metrics
 
 Metrics collected using the A2S INFO protocol provide information about
-players online, server status, etc., and a list of tags is generated.  
+players online, server status, etc., and a list of labels is generated.  
 Metrics collected by Battleye RCON provide detailed information about
 each player or entry in the ban list.
 
-### Steam Query A2S INFO metrics<!-- omit in toc -->
+<!-- omit in toc -->
+### Steam Query A2S INFO metrics
 
 * **`a2s_info_players_online`** — Online players;
 * **`a2s_info_players_slots`** — Players slots count;
 * **`a2s_info_players_queue`** — Players wait in queue;
 * **`a2s_info_time`** — Duration of day time on server;
 
-### Battleye RCON players metrics<!-- omit in toc -->
+<!-- omit in toc -->
+### Battleye RCON players metrics
 
-* **`bercon_player_ping_seconds`** — Ping of players in seconds.
+* **`bercon_player_ping_seconds`** — Player ping in seconds.
   Extra labels: `name`, `ip`, `guid`, `lobby`, `country` [ℹ️](#labels)
 * **`bercon_players_total`** — Total count of players;
 * **`bercon_players_online`** — Count of players online;
 * **`bercon_players_lobby`** — Count of players in lobby;
 * **`bercon_players_invalid`** — Count of invalid players.
 
-### Battleye RCON bans metrics (optional)<!-- omit in toc -->
+<!-- omit in toc -->
+### Battleye RCON bans metrics (optional)
 
 > [!TIP]  
 > By default these metrics are disabled, they should be enabled separately
@@ -119,7 +130,8 @@ each player or entry in the ban list.
   Extra labels: `reason`, `ip`, `country` [ℹ️](#labels)
 * **`bercon_ban_ip_total`** — Total count of IP bans;
 
-### Labels<!-- omit in toc -->
+<!-- omit in toc -->
+### Labels
 
 * **`server`** — Server name;
 * **`map`** — Server map name;
@@ -150,6 +162,15 @@ The DayZ exporter exposes several useful endpoints for monitoring and troublesho
 * `/health/readiness`: A readiness check endpoint that ensures the service
   is fully operational, i.e., all required connections (like RCON and Steam)
   are established and functional.
+
+<!-- markdownlint-disable MD033 -->
+<center>
+
+> ![index]  
+> Index page example on `/` route
+
+</center>
+<!-- markdownlint-enable MD033 -->
 
 ## Setup Exporter
 
@@ -218,7 +239,8 @@ systemctl enable dayz-exporter
 systemctl start dayz-exporter
 ```
 
-#### Systemd `--user` multiple servers<!-- omit in toc -->
+<!-- omit in toc -->
+#### Systemd `--user` multiple servers
 
 You can also use a user-specific systemd service, for example, located
 in `~/.config/systemd/user/dayz-server@.service`. This allows you to manage
@@ -275,7 +297,8 @@ sc.exe query dayz-exporter
 Open <http://127.0.0.1:8098/> in your browser to check if the service is
 running properly.
 
-#### Removing a Windows Service<!-- omit in toc -->
+<!-- omit in toc -->
+#### Removing a Windows Service
 
 ```powershell
 sc.exe stop dayz-exporter
@@ -310,7 +333,8 @@ instance.
 > increase the amount of data stored. Consider adjusting the scrape interval
 > to a longer period (e.g., 1 minute) if the default frequency is not necessary.
 
-### Optional: Process Exporter<!-- omit in toc -->
+<!-- omit in toc -->
+### Optional: Process Exporter
 
 If you wish to collect resource utilization metrics (e.g., CPU, memory) for
 your DayZ servers, and also populate the uptime panel in Grafana, you can
@@ -358,7 +382,8 @@ If you enjoy my projects and want to support further development,
 feel free to donate! Every contribution helps to keep the work going.
 Thank you!
 
-### Crypto Donations<!-- omit in toc -->
+<!-- omit in toc -->
+### Crypto Donations
 
 <!-- cSpell:disable -->
 * **BTC**: `1Jb6vZAMVLQ9wwkyZfx2XgL5cjPfJ8UU3c`
@@ -371,6 +396,7 @@ Your support is greatly appreciated!
 <!-- Links -->
 [logo]: assets/dayz-exporter.png
 [dashboard]: assets/dashboard.png
+[index]: assets/index.png
 [example.config.yaml]: cli/example.config.yaml
 [example.env]: cli/example.env
 [dayz-rcon.json]: grafana/dayz-rcon.json

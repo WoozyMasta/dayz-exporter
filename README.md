@@ -210,8 +210,8 @@ WantedBy=multi-user.target
 > Do not use the `root` user for production environments.
 > It's recommended to create a dedicated user for this purpose.
 
-Save this as `/etc/systemd/system/dayz-exporter.service` and enable it
-using 
+Save this as `/etc/systemd/system/dayz-exporter.service`
+and enable it using
 
 ```bash
 systemctl enable dayz-exporter

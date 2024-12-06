@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	log "github.com/sirupsen/logrus"
 	"github.com/woozymasta/dayz-exporter/pkg/config"
 )
 
@@ -16,13 +17,17 @@ func (c *connection) livenessHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("OK"))
+	if _, err := w.Write([]byte("OK")); err != nil {
+		log.Errorf("liveness probe: %v", err)
+	}
 }
 
 // simple OK if up and ready to handle requests
 func (c *connection) readinessHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("OK"))
+	if _, err := w.Write([]byte("OK")); err != nil {
+		log.Errorf("readiness probe: %v", err)
+	}
 }
 
 func (c *connection) rootHandler(w http.ResponseWriter, r *http.Request) {
@@ -33,7 +38,7 @@ func (c *connection) rootHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "text/html")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`
+	_, err := w.Write([]byte(`
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -71,4 +76,8 @@ func (c *connection) rootHandler(w http.ResponseWriter, r *http.Request) {
 </body>
 </html>
 `))
+
+	if err != nil {
+		log.Errorf("index page: %v", err)
+	}
 }

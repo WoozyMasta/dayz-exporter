@@ -111,6 +111,11 @@ Use dashboard from file [dayz-rcon.json] or [22457] from grafana
 
 ## Setup
 
+## Container Images
+
+* [`docker pull ghcr.io/woozymasta/dayz-exporter:0.1.0`][ghcr]
+* [`docker pull docker.io/woozymasta/dayz-exporter:0.1.0`][docker]
+
 ### SystemD simple
 
 ```ini
@@ -198,3 +203,6 @@ Your support is greatly appreciated!
 [process-exporter]: https://github.com/ncabatoff/process-exporter
 [22457]: https://grafana.com/grafana/dashboards/22457 "DayZ Prometheus Metrics Exporter Dashboard"
 [22458]: https://grafana.com/grafana/dashboards/22458 "System Processes Metrics Dashboard"
+
+[ghcr]: https://github.com/WoozyMasta/dayz-exporter/pkgs/container/dayz-exporter
+[docker]: https://hub.docker.com/r/woozymasta/dayz-exporter

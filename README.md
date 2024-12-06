@@ -24,7 +24,7 @@ environment.
   * [Windows service](#windows-service)
 * [Collect metrics](#collect-metrics)
 * [Visualize in Grafana](#visualize-in-grafana)
-* [Support me 💖](#support-me-)
+* [Support me ☕](#support-me-)
 
 ![dashboard]
 
@@ -352,7 +352,7 @@ To visualize the collected metrics, you'll need a running Grafana instance.
   This dashboard provides insights into resource utilization
   (CPU, memory, etc.) for your DayZ servers.
 
-## Support me 💖
+## Support me ☕
 
 If you enjoy my projects and want to support further development,
 feel free to donate! Every contribution helps to keep the work going.

@@ -1,35 +1,35 @@
 ---
 ## Configuration for the exporter listening parameters
 listen:
-  ip: 0.0.0.0  # IP address to listen (BERCON_EXPORTER_LISTEN_IP)
-  port: 8098  # Port number to listen on for incoming HTTP requests (BERCON_EXPORTER_LISTEN_PORT)
-  endpoint: /metrics  # HTTP endpoint where Prometheus metrics will be exposed (BERCON_EXPORTER_LISTEN_ENDPOINT)
+  ip: 0.0.0.0  # IP address to listen (DAYZ_EXPORTER_LISTEN_IP)
+  port: 8098  # Port number to listen on for incoming HTTP requests (DAYZ_EXPORTER_LISTEN_PORT)
+  endpoint: /metrics  # HTTP endpoint where Prometheus metrics will be exposed (DAYZ_EXPORTER_LISTEN_ENDPOINT)
 
 ## Configuration for querying the DayZ server (A2S Query)
 query:
-  ip: &server 127.0.0.1  # IP address of the server (BERCON_EXPORTER_QUERY_IP)
-  port: 27016  # Port number for DayZ query (BERCON_EXPORTER_QUERY_PORT)
+  ip: &server 127.0.0.1  # IP address of the server (DAYZ_EXPORTER_QUERY_IP)
+  port: 27016  # Port number for DayZ query (DAYZ_EXPORTER_QUERY_PORT)
 
 ## Configuration for querying the DayZ Remote Console (Battleye RCON)
 rcon:
-  ip: *server  # IP address of the RCON. It uses the same IP as the query server (BERCON_EXPORTER_RCON_IP)
-  port: 2305  # Port number for RCON. (BERCON_EXPORTER_RCON_PORT)
-  password:  # Password for RCON authentication. (BERCON_EXPORTER_RCON_PASSWORD)
-  expose_bans: false  # Whether to expose ban information via metrics. (BERCON_EXPORTER_RCON_EXPOSE_BANS)
-  buffer_size: 1040  # The size of the buffer used for RCON communication (BERCON_EXPORTER_RCON_BUFFER_SIZE)
-  keepalive_timeout: 30  # The timeout in seconds for keeping the RCON connection alive (BERCON_EXPORTER_RCON_KEEPALIVE_TIMEOUT)
-  deadline_timeout: 5  # The timeout in seconds for RCON command execution (BERCON_EXPORTER_RCON_DEADLINE_TIMEOUT)
+  ip: *server  # IP address of the RCON. It uses the same IP as the query server (DAYZ_EXPORTER_RCON_IP)
+  port: 2305  # Port number for RCON. (DAYZ_EXPORTER_RCON_PORT)
+  password:  # Password for RCON authentication. (DAYZ_EXPORTER_RCON_PASSWORD)
+  expose_bans: false  # Whether to expose ban information via metrics. (DAYZ_EXPORTER_RCON_EXPOSE_BANS)
+  buffer_size: 1040  # The size of the buffer used for RCON communication (DAYZ_EXPORTER_RCON_BUFFER_SIZE)
+  keepalive_timeout: 30  # The timeout in seconds for keeping the RCON connection alive (DAYZ_EXPORTER_RCON_KEEPALIVE_TIMEOUT)
+  deadline_timeout: 5  # The timeout in seconds for RCON command execution (DAYZ_EXPORTER_RCON_DEADLINE_TIMEOUT)
 
 ## Custom labels to be added to the metrics, can be useful for distinguishing between servers or clusters
-# labels:  # Example : (BERCON_EXPORTER_LABELS="dc:EU-2,rack:U4")
+# labels:  # Example : (DAYZ_EXPORTER_LABELS="dc:EU-2,rack:U4")
 #   dc: HV-1  # Data center identifier. Example label
 #   rack: U4  # Rack identifier within the data center. Example label
 
 ## Path to the GeoIP database for IP geolocation (used for enriching players and bans data with location info)
-# geo_db: ./GeoLite2-Country.mmdb  # Path to the MaxMind GeoLite2 country database file. (BERCON_EXPORTER_GEOIP_DB)
+# geo_db: ./GeoLite2-Country.mmdb  # Path to the MaxMind GeoLite2 country database file. (DAYZ_EXPORTER_GEOIP_DB)
 
 ## Logging configuration
 logging:
-  level: info  # Logging level. Options: 'debug', 'info', 'warn', 'error' (BERCON_EXPORTER_LOG_LEVEL)
-  format: text  # Logging format. Options: 'text' (human-readable) or 'json' (structured) (BERCON_EXPORTER_LOG_FORMAT)
-  output: stderr  # Output destination for logs. Options: 'stderr' (default) or 'stdout' or a file path (BERCON_EXPORTER_LOG_OUTPUT)
+  level: info  # Logging level. Options: 'debug', 'info', 'warn', 'error' (DAYZ_EXPORTER_LOG_LEVEL)
+  format: text  # Logging format. Options: 'text' (human-readable) or 'json' (structured) (DAYZ_EXPORTER_LOG_FORMAT)
+  output: stderr  # Output destination for logs. Options: 'stderr' (default) or 'stdout' or a file path (DAYZ_EXPORTER_LOG_OUTPUT)

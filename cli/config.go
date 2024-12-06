@@ -16,12 +16,12 @@ const defaultConfigPath = "config.yaml"
 
 // Главная структура конфига.
 type Config struct {
-	Listen  Listen            `yaml:"listen,omitempty" env:", prefix=BERCON_EXPORTER_LISTEN_"`
-	Query   Query             `yaml:"query,omitempty" env:", prefix=BERCON_EXPORTER_QUERY_"`
-	Rcon    Rcon              `yaml:"rcon,omitempty" env:", prefix=BERCON_EXPORTER_RCON_"`
-	Labels  map[string]string `yaml:"labels,omitempty" env:"BERCON_EXPORTER_LABELS"`
-	GeoDB   string            `yaml:"geo_db,omitempty" env:"BERCON_EXPORTER_GEOIP_DB"`
-	Logging logging.LogConfig `yaml:"logging,omitempty" env:", prefix=BERCON_EXPORTER_"`
+	Listen  Listen            `yaml:"listen,omitempty" env:", prefix=DAYZ_EXPORTER_LISTEN_"`
+	Query   Query             `yaml:"query,omitempty" env:", prefix=DAYZ_EXPORTER_QUERY_"`
+	Rcon    Rcon              `yaml:"rcon,omitempty" env:", prefix=DAYZ_EXPORTER_RCON_"`
+	Labels  map[string]string `yaml:"labels,omitempty" env:"DAYZ_EXPORTER_LABELS"`
+	GeoDB   string            `yaml:"geo_db,omitempty" env:"DAYZ_EXPORTER_GEOIP_DB"`
+	Logging logging.LogConfig `yaml:"logging,omitempty" env:", prefix=DAYZ_EXPORTER_"`
 }
 
 // Структура для глобальных настроек (settings).
@@ -91,7 +91,7 @@ func loadConfig() (*Config, error) {
 
 // Функция для получения пути к конфигу (переменная среды или аргументы).
 func getConfigPath() (string, bool) {
-	if path := os.Getenv("BERCON_EXPORTER_CONFIG_PATH"); path != "" {
+	if path := os.Getenv("DAYZ_EXPORTER_CONFIG_PATH"); path != "" {
 		return path, true
 	}
 	if len(os.Args) > 1 {

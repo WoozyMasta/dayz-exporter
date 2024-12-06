@@ -58,7 +58,7 @@ Available options:
   -h, --help        Prints this help message.
 
 Configuration File Lookup:
-  - The program first checks for a configuration file specified by the variable 'BERCON_EXPORTER_CONFIG_PATH'.
+  - The program first checks for a configuration file specified by the variable 'DAYZ_EXPORTER_CONFIG_PATH'.
   - If the config variable is not set, it will attempt to use a configuration file passed as a command-line argument.
   - If no argument is provided, it will attempt to read from the default file 'config.yaml' in the current directory.
 
@@ -70,7 +70,7 @@ Examples:
     %[1]s --get-env
 
   Run the program with a custom configuration file:
-    BERCON_EXPORTER_RCON_PASSWORD=strong %[1]s config.yaml
+    DAYZ_EXPORTER_RCON_PASSWORD=strong %[1]s config.yaml
 
   Run the program normally (without any options):
     %[1]s

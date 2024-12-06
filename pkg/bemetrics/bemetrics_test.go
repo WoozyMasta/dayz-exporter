@@ -23,23 +23,23 @@ func LoadTestData(filename string) ([]byte, error) {
 }
 
 func initVars() (rcon_address, password, query_address string) {
-	ip, ok := os.LookupEnv("BERCON_EXPORTER_RCON_IP")
+	ip, ok := os.LookupEnv("DAYZ_EXPORTER_RCON_IP")
 	if !ok {
 		ip = "127.0.0.1"
 	}
-	rcon_port, ok := os.LookupEnv("BERCON_EXPORTER_RCON_PORT")
+	rcon_port, ok := os.LookupEnv("DAYZ_EXPORTER_RCON_PORT")
 	if !ok {
 		rcon_port = "2025"
 	}
 	rcon_address = fmt.Sprintf("%s:%s", ip, rcon_port)
 
-	query_port, ok := os.LookupEnv("BERCON_EXPORTER_QUERY_PORT")
+	query_port, ok := os.LookupEnv("DAYZ_EXPORTER_QUERY_PORT")
 	if !ok {
 		query_port = "27016"
 	}
 	query_address = fmt.Sprintf("%s:%s", ip, query_port)
 
-	password, ok = os.LookupEnv("BERCON_EXPORTER_RCON_PASSWORD")
+	password, ok = os.LookupEnv("DAYZ_EXPORTER_RCON_PASSWORD")
 	if !ok {
 		password = ""
 	}

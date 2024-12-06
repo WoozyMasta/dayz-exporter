@@ -29,7 +29,7 @@ Run the program with a custom configuration file:
 Configuration File Lookup:
 
 * The program first checks for a configuration file specified by the
-  variable `BERCON_EXPORTER_CONFIG_PATH`.
+  variable `DAYZ_EXPORTER_CONFIG_PATH`.
 * If the config variable is not set, it will attempt to use a configuration
   file passed as a command-line argument.
 * If no argument is provided, it will attempt to read from the default
@@ -54,7 +54,7 @@ YAML config options have higher priority, for mixed use with variables
 comment out the overridden options.
 
 ```bash
-BERCON_EXPORTER_RCON_PASSWORD=strong %[1]s config.yaml
+DAYZ_EXPORTER_RCON_PASSWORD=strong %[1]s config.yaml
 ```
 
 For more information on configuration parameters, refer to the example
@@ -146,12 +146,12 @@ After=network-online.target dayz-server@%i.target
 
 [Service]
 WorkingDirectory=%h/dayz/
-Environment="BERCON_EXPORTER_LISTEN_PORT=809%i"
-Environment="BERCON_EXPORTER_QUERY_PORT=2702%i"
-Environment="BERCON_EXPORTER_RCON_PORT=230%i5"
-Environment="BERCON_EXPORTER_RCON_EXPOSE_BANS=true"
-Environment="BERCON_EXPORTER_RCON_PASSWORD=strong"
-Environment="BERCON_EXPORTER_GEOIP_DB=%h/dayz/GeoLite2-Country.mmdb"
+Environment="DAYZ_EXPORTER_LISTEN_PORT=809%i"
+Environment="DAYZ_EXPORTER_QUERY_PORT=2702%i"
+Environment="DAYZ_EXPORTER_RCON_PORT=230%i5"
+Environment="DAYZ_EXPORTER_RCON_EXPOSE_BANS=true"
+Environment="DAYZ_EXPORTER_RCON_PASSWORD=strong"
+Environment="DAYZ_EXPORTER_GEOIP_DB=%h/dayz/GeoLite2-Country.mmdb"
 ExecStart=%h/.local/bin/dayz-exporter
 Restart=on-failure
 RestartSec=5s

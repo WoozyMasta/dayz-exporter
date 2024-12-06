@@ -31,7 +31,7 @@ environment.
 <center>
 
 > ![dashboard]  
-> grafana dashboard example
+> Grafana [dashboard][22457] example
 
 </center>
 <!-- markdownlint-enable MD033 -->

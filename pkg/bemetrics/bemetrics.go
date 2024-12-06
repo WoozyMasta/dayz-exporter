@@ -4,7 +4,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-// Отвечает за хранение различных метрик
+// responsible for storing various metrics
 type MetricsCollector struct {
 	playerPingMetric    *prometheus.GaugeVec
 	playersTotal        *prometheus.GaugeVec
@@ -22,14 +22,14 @@ type MetricsCollector struct {
 	customLabels        Labels
 }
 
-// Создает пустой экземпляр MetricsCollector
+// creates an empty MetricsCollector instance
 func NewMetricsCollector(customLabels Labels) *MetricsCollector {
 	return &MetricsCollector{
 		customLabels: customLabels,
 	}
 }
 
-// Метод отдает все метрики из структуры MetricsCollector
+// returns all metrics from the MetricsCollector structure
 func (mc *MetricsCollector) getAllMetrics() []prometheus.Collector {
 	return []prometheus.Collector{
 		// players
@@ -51,7 +51,7 @@ func (mc *MetricsCollector) getAllMetrics() []prometheus.Collector {
 	}
 }
 
-// Регистрирует только инициализированные метрики
+// register only initialized metrics
 func (mc *MetricsCollector) RegisterMetrics() {
 	for _, metric := range mc.getAllMetrics() {
 		if gaugeVec, ok := metric.(*prometheus.GaugeVec); ok {
@@ -62,7 +62,7 @@ func (mc *MetricsCollector) RegisterMetrics() {
 	}
 }
 
-// Сбрасывает все инициализированные метрики
+// resets all initialized metrics
 func (mc *MetricsCollector) ResetMetrics() {
 	for _, metric := range mc.getAllMetrics() {
 		if gaugeVec, ok := metric.(*prometheus.GaugeVec); ok {

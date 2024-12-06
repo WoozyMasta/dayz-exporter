@@ -16,6 +16,7 @@ var exampleConfig []byte
 //go:embed example.env
 var exampleEnv []byte
 
+// arguments parser
 func parseArgs() {
 	if len(os.Args) < 2 || !strings.HasPrefix(os.Args[1], "-") {
 		return
@@ -36,14 +37,14 @@ func parseArgs() {
 	}
 }
 
-// Функция для печати содержимого встроенного файла
+// printer for embedded files content
 func printExampleConfig(name string, content []byte) {
 	fmt.Printf("# Example %s\n", name)
 	fmt.Println(string(content))
 	os.Exit(0)
 }
 
-// Функция для вывода справки
+// just print help message and exit
 func printHelp(binary string) {
 	helpText := fmt.Sprintf(`%[1]s v%s
 Collects and publishes Prometheus metrics from Battleye RCON and Steam A2S Query for DayZ server.
@@ -83,7 +84,7 @@ For more information on configuration parameters, refer to the example configura
 	os.Exit(0)
 }
 
-// Функция для вывода версии и сборки
+// print version information message and exit
 func printVersion(binary string) {
 	fmt.Printf("%s\nversion=%s\ncommit=%s\nbuilt=%s\n", binary, config.Version, config.Commit, config.BuildTime)
 	os.Exit(0)

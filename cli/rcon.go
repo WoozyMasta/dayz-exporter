@@ -14,32 +14,33 @@ import (
 )
 
 type connection struct {
-	rcon      *bercon.Connection          // Активное подключение к серверу
-	query     *a2s.Client                 // A2S Steam Query подключение
-	collector *bemetrics.MetricsCollector // Коллектор метрик сервера
-	geo       *geoip2.Reader              // Использовать GeoDB
-	bans      bool                        // Нужны ли метрики по банам
+	rcon      *bercon.Connection          // connection to BattleEye RCON server
+	query     *a2s.Client                 // connection to A2S Steam Query
+	collector *bemetrics.MetricsCollector // metrics collector
+	geo       *geoip2.Reader              // reader for geoip DB
+	info      *a2s.ServerInfo             // server information
+	bans      bool                        // flag for enable/disable bans metrics
 }
 
-// создаем менеджер всех bercon подключений
+// create connection manager
 func setupConnection(cfg *Config) (*connection, error) {
-	// Настраиваем подключение к RCON
+	// create connection to BattleEye RCON
 	rcon, err := bercon.Open(fmt.Sprintf("%s:%d", cfg.Rcon.IP, cfg.Rcon.Port), cfg.Rcon.Password)
 	if err != nil {
 		return nil, err
 	}
 
-	// Настраиваем подключение
+	// setup connection
 	if cfg.Rcon.KeepaliveTimeout != 0 {
 		rcon.SetKeepaliveTimeout(cfg.Rcon.KeepaliveTimeout)
 	}
 	rcon.SetDeadlineTimeout(cfg.Rcon.DeadlineTimeout)
 	rcon.SetBufferSize(cfg.Rcon.BufferSize)
 
-	// Запускаем keepalive для соединений
+	// start keepalive for BattleEye RCON connections
 	rcon.StartKeepAlive()
 
-	// Steam A2S Query создаем подключение
+	// create connection to Steam A2S Query
 	query, err := a2s.NewClient(fmt.Sprintf("%s:%d", cfg.Query.IP, cfg.Query.Port))
 	if err != nil {
 		return nil, err
@@ -49,7 +50,9 @@ func setupConnection(cfg *Config) (*connection, error) {
 		return nil, err
 	}
 
-	// Создаем bemetrics коллектор метрик
+	log.Infof("Connected to \"%s\" (%s) server on %s:%d", info.Name, info.Map, cfg.Query.IP, cfg.Query.Port)
+
+	// create bemetrics metrics collector
 	collector := bemetrics.NewMetricsCollector(makeLabels(info, cfg.Labels))
 
 	var geoDB *geoip2.Reader
@@ -61,33 +64,34 @@ func setupConnection(cfg *Config) (*connection, error) {
 		log.Traceln("GeoDB loaded success")
 	}
 
-	// Создаем структуру подключения
+	// init connection structure
 	connection := connection{
 		rcon:      rcon,
 		query:     query,
 		collector: collector,
 		bans:      cfg.Rcon.Bans,
+		info:      info,
 		geo:       geoDB,
 	}
 
-	// Инициализируем bemetrics метрики
+	// initialize metrics
 	connection.collector.InitServerMetrics()
 	connection.collector.InitPlayerMetrics()
 	if cfg.Rcon.Bans {
 		connection.collector.InitBansMetrics()
 	}
 
-	// Регистрируем bemetrics метрики
+	// register metrics
 	connection.collector.RegisterMetrics()
 
 	return &connection, nil
 }
 
-// Получаем и обновляем метрики сервера из Steam Query
+// get and update server metrics from Steam A2S Query
 func (c *connection) updateServerMetrics() error {
 	info, err := c.query.QueryInfo()
 	if err != nil {
-		return fmt.Errorf("failed to get A2S info querry response: %w", err)
+		return fmt.Errorf("failed to get A2S info query response: %w", err)
 	}
 
 	c.collector.UpdateServerMetrics(info)
@@ -96,7 +100,7 @@ func (c *connection) updateServerMetrics() error {
 	return nil
 }
 
-// Получаем и обновляем метрики для игроков
+// get and update players metrics from BattleEye RCON
 func (c *connection) updatePlayersMetrics() error {
 	data, err := c.rcon.Send("players")
 	if err != nil {
@@ -117,7 +121,7 @@ func (c *connection) updatePlayersMetrics() error {
 	return nil
 }
 
-// Получаем и обновляем метрики для банов
+// get and update bans metrics from BattleEye RCON
 func (c *connection) updateBansMetrics() error {
 	if !c.bans {
 		return nil
@@ -147,7 +151,7 @@ func (c *connection) updateBansMetrics() error {
 	return nil
 }
 
-// http ручка для обновления метрик по запросу
+// http handler for update metrics for each request
 func (c *connection) metricsHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := c.updateServerMetrics(); err != nil {
@@ -164,12 +168,12 @@ func (c *connection) metricsHandler() http.HandlerFunc {
 		}
 
 		log.Debugf("Metrics updated")
-		// Прокидываем управление стандартному handler prometheus
+		// pass control over the standard handler prometheus
 		promhttp.Handler().ServeHTTP(w, r)
 	}
 }
 
-// обработчик ошибок в http ручке
+// error handler in http connection
 func (c *connection) handleError(w http.ResponseWriter, err error, context string) {
 	c.collector.ResetMetrics()
 	c.query.Close()

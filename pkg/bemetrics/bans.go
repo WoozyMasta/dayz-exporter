@@ -5,7 +5,7 @@ import (
 	"github.com/woozymasta/bercon-cli/pkg/beparser"
 )
 
-// InitBansMetrics инициализирует метрики для банов.
+// initialize bercon ban metrics
 func (mc *MetricsCollector) InitBansMetrics() {
 	labels := mc.customLabels.Keys()
 
@@ -50,13 +50,13 @@ func (mc *MetricsCollector) InitBansMetrics() {
 	}
 }
 
-// UpdateBansMetrics обновляет метрики для банов (GUID и IP).
+// update ban metrics (GUID and IP)
 func (mc *MetricsCollector) UpdateBansMetrics(bans *beparser.Bans) {
 	values := mc.customLabels.Values()
 
-	// Обновляем метрики для GUID банов
+	// update GUID bans
 	if mc.banGuidTimeMetric != nil {
-		mc.banGuidTimeMetric.Reset() // количество метрик меняется, каждый раз сбрасываем
+		mc.banGuidTimeMetric.Reset() // count of metrics is dynamic, reset it always
 
 		for _, ban := range bans.GUIDBans {
 			mc.banGuidTimeMetric.WithLabelValues(append(values, ban.Reason, ban.GUID)...).Set(banSeconds(ban.MinutesLeft))
@@ -67,9 +67,9 @@ func (mc *MetricsCollector) UpdateBansMetrics(bans *beparser.Bans) {
 		mc.banGuidTotal.WithLabelValues(values...).Set(float64(len(bans.GUIDBans)))
 	}
 
-	// Обновляем метрики для IP банов
+	// update IP bans
 	if mc.banIpTimeMetric != nil {
-		mc.banIpTimeMetric.Reset() // количество метрик меняется, каждый раз сбрасываем
+		mc.banIpTimeMetric.Reset() // count of metrics is dynamic, reset it always
 
 		for _, ban := range bans.IPBans {
 			mc.banIpTimeMetric.WithLabelValues(append(values, ban.Reason, ban.IP, ban.Country)...).Set(banSeconds(ban.MinutesLeft))

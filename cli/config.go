@@ -4,17 +4,15 @@ import (
 	"context"
 	"os"
 
-	"github.com/rumblefrog/go-a2s"
 	"github.com/sethvargo/go-envconfig"
 	log "github.com/sirupsen/logrus"
-	"github.com/woozymasta/dayz-exporter/pkg/bemetrics"
 	"github.com/woozymasta/dayz-exporter/pkg/logging"
 	"gopkg.in/yaml.v3"
 )
 
 const defaultConfigPath = "config.yaml"
 
-// Главная структура конфига.
+// main config structure
 type Config struct {
 	Listen  Listen            `yaml:"listen,omitempty" env:", prefix=DAYZ_EXPORTER_LISTEN_"`
 	Query   Query             `yaml:"query,omitempty" env:", prefix=DAYZ_EXPORTER_QUERY_"`
@@ -24,18 +22,20 @@ type Config struct {
 	Logging logging.LogConfig `yaml:"logging,omitempty" env:", prefix=DAYZ_EXPORTER_"`
 }
 
-// Структура для глобальных настроек (settings).
+// listen settings for exporter
 type Listen struct {
 	IP       string `yaml:"ip,omitempty" env:"IP, default=0.0.0.0"`
 	Port     uint16 `yaml:"port,omitempty" env:"PORT, default=8098"`
 	Endpoint string `yaml:"endpoint,omitempty" env:"ENDPOINT, default=/metrics"`
 }
 
+// Steam A2S query connection settings
 type Query struct {
 	IP   string `yaml:"ip,omitempty" env:"IP, default=127.0.0.1"`
 	Port uint16 `yaml:"port,omitempty" env:"PORT, default=27016"`
 }
 
+// BattleEye RCON connection settings
 type Rcon struct {
 	IP               string `yaml:"ip,omitempty" env:"IP, default=127.0.0.1"`
 	Port             uint16 `yaml:"port,omitempty" env:"PORT, default=2305"`
@@ -46,11 +46,11 @@ type Rcon struct {
 	DeadlineTimeout  int    `yaml:"deadline_timeout,omitempty" env:"DEADLINE_TIMEOUT, default=5"`
 }
 
-// Функция для загрузки конфига.
+// config loader
 func loadConfig() (*Config, error) {
 	var config Config
 
-	// пытаемся загрузить конфигурацию из файла, если файл существует
+	// load config from file if is exists
 	if path, ok := getConfigPath(); ok {
 		configFile, err := os.Open(path)
 		if err != nil {
@@ -65,7 +65,7 @@ func loadConfig() (*Config, error) {
 		}
 	}
 
-	// загружаем переменные окружения
+	// load environment variables
 	ctx := context.Background()
 	if err := envconfig.Process(ctx, &config); err != nil {
 		return nil, err
@@ -75,6 +75,7 @@ func loadConfig() (*Config, error) {
 		log.Fatalf("Missing required RCON password")
 	}
 
+	// initialize logging
 	logging.InitLogger(&config.Logging)
 
 	if config.GeoDB != "" {
@@ -89,7 +90,7 @@ func loadConfig() (*Config, error) {
 	return &config, nil
 }
 
-// Функция для получения пути к конфигу (переменная среды или аргументы).
+// get path to configuration file from variables, argument or use default
 func getConfigPath() (string, bool) {
 	if path := os.Getenv("DAYZ_EXPORTER_CONFIG_PATH"); path != "" {
 		return path, true
@@ -102,25 +103,4 @@ func getConfigPath() (string, bool) {
 	}
 
 	return "", false
-}
-
-func makeLabels(info *a2s.ServerInfo, extraLabels map[string]string) bemetrics.Labels {
-	game := info.Game
-	if game == "" {
-		game = info.Folder
-	}
-
-	labels := []bemetrics.Label{
-		{Key: "server", Value: info.Name},
-		{Key: "map", Value: info.Map},
-		{Key: "game", Value: game},
-		{Key: "os", Value: info.ServerOS.String()},
-		{Key: "version", Value: info.Version},
-	}
-
-	for k, v := range extraLabels {
-		labels = append(labels, bemetrics.Label{Key: k, Value: v})
-	}
-
-	return labels
 }

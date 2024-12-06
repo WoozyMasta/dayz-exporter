@@ -19,7 +19,7 @@ type LogConfig struct {
 
 var logInit sync.Once
 
-// Инициализирует логгер на основе предоставленной конфигурации.
+// initializes the logger based on the provided configuration
 func InitLogger(config *LogConfig) {
 	logInit.Do(func() {
 		SetLevel(config.Level)
@@ -30,7 +30,7 @@ func InitLogger(config *LogConfig) {
 	})
 }
 
-// Инициализирует логгер, загружая конфигурацию из переменных окружения.
+// initializes the logger by loading the configuration from environment variables
 func InitLoggerEnv(ctx context.Context) {
 	config := &LogConfig{}
 	if err := envconfig.Process(ctx, config); err != nil {
@@ -39,7 +39,7 @@ func InitLoggerEnv(ctx context.Context) {
 	InitLogger(config)
 }
 
-// задает уровень логирования
+// set logging level
 func SetLevel(lvl string) {
 	logLevel, err := log.ParseLevel(lvl)
 	if err != nil {
@@ -54,7 +54,7 @@ func SetLevel(lvl string) {
 	log.SetLevel(logLevel)
 }
 
-// задает формат логирования
+// set logging format
 func SetFormat(format string) {
 	var logFormat log.Formatter
 
@@ -68,7 +68,7 @@ func SetFormat(format string) {
 	log.SetFormatter(logFormat)
 }
 
-// открывает и задает файл для записи логов
+// opens and specifies a file or chanel for writing logs
 func SetOutput(destination string) error {
 	var output *os.File
 

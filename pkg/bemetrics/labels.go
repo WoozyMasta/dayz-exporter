@@ -1,18 +1,18 @@
 package bemetrics
 
-// Содержит набор дополнительных статичных меток которые добавляются к метрикам
+// contains a set of additional static labels that are added to metrics
 type Labels []Label
 type Label struct {
 	Key   string
 	Value string
 }
 
-// Создает пустой экземпляр Labels
+// creates an empty Labels instance
 func NewLabels(customLabels Labels) *Labels {
 	return &Labels{}
 }
 
-// Возвращает все ключи меток
+// returns all labels keys
 func (l Labels) Keys() []string {
 	keys := make([]string, len(l))
 	for i, label := range l {
@@ -21,7 +21,7 @@ func (l Labels) Keys() []string {
 	return keys
 }
 
-// Возвращает все значения меток
+// returns all labels values
 func (l Labels) Values() []string {
 	values := make([]string, len(l))
 	for i, label := range l {

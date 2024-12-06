@@ -23,6 +23,7 @@ type DayZ struct {
 	Time           time.Duration
 }
 
+// parse A2S INFO gametype data for DayZ
 func (d *DayZ) Parse(gametype string) {
 	tags := strings.Split(gametype, ",")
 

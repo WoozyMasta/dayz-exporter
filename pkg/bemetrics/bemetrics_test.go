@@ -13,7 +13,7 @@ import (
 	"github.com/woozymasta/bercon-cli/pkg/bercon"
 )
 
-// LoadTestData reads test data from a specified text file.
+// reads test data from a specified text file.
 func LoadTestData(filename string) ([]byte, error) {
 	data, err := os.ReadFile(filepath.Join("test_data", filename))
 	if err != nil {
@@ -55,13 +55,13 @@ func getCustomLabels() Labels {
 }
 
 func TestPlayerMetricsFromFile(t *testing.T) {
-	// Загружаем тестовые данные из файла
+	// load data from file
 	input, err := LoadTestData("players.txt")
 	if err != nil {
 		t.Fatalf("Failed to load players test data: %v", err)
 	}
 
-	// Парсим данные
+	// parse data
 	players := &beparser.Players{}
 	players.Parse(input)
 	if err != nil {
@@ -75,15 +75,15 @@ func TestPlayerMetricsFromFile(t *testing.T) {
 	defer geoDB.Close()
 	players.SetCountryCode(geoDB)
 
-	// Инициализируем и регистрируем метрики для игроков
+	// initialize and register metrics for players
 	mc := NewMetricsCollector(getCustomLabels())
 	mc.InitPlayerMetrics()
 	mc.RegisterMetrics()
 
-	// Обновляем метрики с данными о игроках
+	// update metrics with player data
 	mc.UpdatePlayerMetrics(players)
 
-	// Выводим метрики
+	// output metrics
 	metricsFamilies, err := prometheus.DefaultGatherer.Gather()
 	if err != nil {
 		t.Fatalf("Error gathering metrics: %v", err)
@@ -98,10 +98,10 @@ func TestPlayerMetricsFromFile(t *testing.T) {
 }
 
 func TestMetricsFromBercon(t *testing.T) {
-	// Инициализируем параметры для подключения
+	// initialize the parameters for connection
 	address, password, query_address := initVars()
 
-	// Подключаемся к A2S Query
+	// connect to A2S Query
 	query, err := a2s.NewClient(query_address)
 	if err != nil {
 		t.Fatalf("Error connecting to A2S Query: %v", err)
@@ -111,34 +111,34 @@ func TestMetricsFromBercon(t *testing.T) {
 		t.Fatalf("Error query A2S_INFO: %v", err)
 	}
 
-	// Подключаемся к Bercon
+	// connect to BeRCON
 	berconClient, err := bercon.Open(address, password)
 	if err != nil {
 		t.Fatalf("Error connecting to Bercon: %v", err)
 	}
 	defer berconClient.Close()
 
-	// Отправляем команду "players" и получаем ответ
+	// send the command "players" and receive a response
 	data, err := berconClient.Send("players")
 	if err != nil {
 		t.Fatalf("Error sending 'players' command: %v", err)
 	}
 
-	// Парсим полученные данные
+	// parse response
 	players := beparser.NewPlayers()
 	players.Parse(data)
 
-	// Инициализируем и регистрируем метрики для игроков
+	// initialize and register metrics for players
 	mc := NewMetricsCollector(getCustomLabels())
 	mc.InitServerMetrics() // A2S
 	mc.InitPlayerMetrics() // RCON
 	mc.RegisterMetrics()
 
 	mc.UpdateServerMetrics(info)
-	// Обновляем метрики с данными о игроках
+	// update metrics with player data
 	mc.UpdatePlayerMetrics(players)
 
-	// Выводим метрики
+	// output metrics
 	metricsFamilies, err := prometheus.DefaultGatherer.Gather()
 	if err != nil {
 		t.Fatalf("Error gathering metrics: %v", err)
@@ -153,23 +153,23 @@ func TestMetricsFromBercon(t *testing.T) {
 }
 
 func TestBansMetricsFromBerconSeparateRegistry(t *testing.T) {
-	// Инициализируем параметры для подключения
+	// initialize the parameters for connection
 	address, password, _ := initVars()
 
-	// Подключаемся к Bercon
+	// connect to BeRCON
 	berconClient, err := bercon.Open(address, password)
 	if err != nil {
 		t.Fatalf("Error connecting to Bercon: %v", err)
 	}
 	defer berconClient.Close()
 
-	// Отправляем команду "players" и получаем ответ
+	// send the command "players" and receive a response
 	data, err := berconClient.Send("bans")
 	if err != nil {
 		t.Fatalf("Error sending 'players' command: %v", err)
 	}
 
-	// Парсим полученные данные
+	// parse response
 	response := beparser.Parse(data, "bans")
 	bans, ok := response.(*beparser.Bans)
 	if !ok {
@@ -183,10 +183,10 @@ func TestBansMetricsFromBerconSeparateRegistry(t *testing.T) {
 	defer geoDB.Close()
 	bans.SetCountryCode(geoDB)
 
-	//? Создаем новый реестр
+	//? create new metrics registry
 	reg := prometheus.NewRegistry()
 
-	// Инициализируем и регистрируем метрики для игроков
+	// initialize and register metrics for players
 	mc := NewMetricsCollector(getCustomLabels())
 	mc.InitBansMetrics()
 	reg.MustRegister(mc.banGuidTimeMetric)
@@ -194,10 +194,10 @@ func TestBansMetricsFromBerconSeparateRegistry(t *testing.T) {
 	reg.MustRegister(mc.banIpTimeMetric)
 	reg.MustRegister(mc.banIpTotal)
 
-	// Обновляем метрики с данными о игроках
+	// update metrics with player data
 	mc.UpdateBansMetrics(bans)
 
-	// Выводим метрики
+	// output metrics
 	metricsFamilies, err := reg.Gather()
 	if err != nil {
 		t.Fatalf("Error gathering metrics: %v", err)

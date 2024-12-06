@@ -6,7 +6,7 @@ import (
 	"github.com/woozymasta/dayz-exporter/pkg/gametype"
 )
 
-// InitPlayerMetrics инициализирует метрики для игроков.
+// initialize a2s server metrics
 func (mc *MetricsCollector) InitServerMetrics() {
 	labels := mc.customLabels.Keys()
 
@@ -51,7 +51,7 @@ func (mc *MetricsCollector) InitServerMetrics() {
 	}
 }
 
-// UpdatePlayerMetrics обновляет метрики для списка игроков.
+// update a2s server metrics
 func (mc *MetricsCollector) UpdateServerMetrics(serverInfo *a2s.ServerInfo) {
 	var extendedInfo gametype.DayZ
 	extendedInfo.Parse(serverInfo.ExtendedServerInfo.Keywords)

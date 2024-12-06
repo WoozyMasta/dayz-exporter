@@ -7,7 +7,7 @@ import (
 	"github.com/woozymasta/bercon-cli/pkg/beparser"
 )
 
-// InitPlayerMetrics инициализирует метрики для игроков.
+// initialize bercon players metrics
 func (mc *MetricsCollector) InitPlayerMetrics() {
 	labels := mc.customLabels.Keys()
 
@@ -62,12 +62,12 @@ func (mc *MetricsCollector) InitPlayerMetrics() {
 	}
 }
 
-// UpdatePlayerMetrics обновляет метрики для списка игроков.
+// update bercon players metrics
 func (mc *MetricsCollector) UpdatePlayerMetrics(players *beparser.Players) {
 	values := mc.customLabels.Values()
 
 	if mc.playerPingMetric != nil {
-		mc.playerPingMetric.Reset() // количество метрик меняется, каждый раз сбрасываем
+		mc.playerPingMetric.Reset() // count of metrics is dynamic, reset it always
 
 		for _, player := range *players {
 			lobby := fmt.Sprintf("%t", player.Lobby)
@@ -95,6 +95,7 @@ func (mc *MetricsCollector) UpdatePlayerMetrics(players *beparser.Players) {
 	}
 }
 
+// return online/lobby/invalid players count
 func countPlayers(players []beparser.Player) (float64, float64, float64) {
 	var online, lobby, invalid float64
 

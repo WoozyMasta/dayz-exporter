@@ -19,6 +19,8 @@ func main() {
 
 // load config, init connections and serve metrics
 func runApp() {
+	parseArgs()
+
 	config, err := loadConfig()
 	if err != nil {
 		log.Fatalf("Load config failed: %s", err)

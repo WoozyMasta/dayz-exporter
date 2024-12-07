@@ -3,3 +3,4 @@ dev.env
 *.mmdb
 *.psd
 config.yaml
+*.syso

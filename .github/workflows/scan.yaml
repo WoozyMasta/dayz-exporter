@@ -2,7 +2,7 @@ name: Scan release
 
 on:
   release:
-    types: [published]
+    types: [published, created, released, edited]
 
 permissions:
   contents: write
@@ -21,3 +21,4 @@ jobs:
             ./dayz-exporter-linux-amd64
             ./dayz-exporter-linux-arm64
             ./dayz-exporter-windows-amd64.exe
+            ./dayz-exporter-windows-386.exe

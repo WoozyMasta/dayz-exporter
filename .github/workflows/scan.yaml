@@ -12,13 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: VirusTotal Scan
-        uses: crazy-max/ghaction-virustotal@v4
+        uses: cssnr/virustotal-action@v1
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           vt_api_key: ${{ secrets.VT_API_KEY }}
-          update_release_body: true
-          files: |
-            ./dayz-exporter-darwin-arm64
-            ./dayz-exporter-linux-amd64
-            ./dayz-exporter-linux-arm64
-            ./dayz-exporter-windows-amd64.exe
-            ./dayz-exporter-windows-386.exe
+          rate_limit: 4
+          update_release: true

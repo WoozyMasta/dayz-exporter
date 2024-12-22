@@ -6,12 +6,6 @@ import (
 	"strings"
 )
 
-var excludedPaths = []string{
-	"/health",
-	"/health/liveness",
-	"/health/readiness",
-}
-
 // Middleware for Basic Auth
 func basicAuthMiddleware(mux http.Handler, config Listen) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

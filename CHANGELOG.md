@@ -13,6 +13,24 @@ and this project adheres to [Semantic Versioning][].
 ### Removed
 -->
 
+## [0.2.0][] - 2024-12-22
+
+### Added
+
+* Basic authentication for all HTTP endpoints,
+  with `/health*` optional for protection
+* SBOM generation and cyclonedx-gomod dev tool dependency
+* Added workflow action for check structures alignment
+
+### Changed
+
+* Grafana dashboard misspell
+* Align all structs for less memory usage
+* Workflow action for VirusTotal scan artifacts replaced with version
+  that supports file masking in release
+
+[0.2.0]: https://github.com/WoozyMasta/dayz-exporter/releases/tag/v0.2.0
+
 ## [0.1.1][] - 2024-12-07
 
 ### Added

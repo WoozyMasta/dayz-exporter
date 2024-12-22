@@ -8,7 +8,7 @@ require (
 	github.com/rumblefrog/go-a2s v1.0.2
 	github.com/sethvargo/go-envconfig v1.1.0
 	github.com/sirupsen/logrus v1.9.3
-	github.com/woozymasta/bercon-cli v0.1.0
+	github.com/woozymasta/bercon-cli v0.2.0
 	golang.org/x/sys v0.28.0
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -23,5 +23,5 @@ require (
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.61.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
-	google.golang.org/protobuf v1.35.2 // indirect
+	google.golang.org/protobuf v1.36.0 // indirect
 )

@@ -19,6 +19,7 @@ environment.
 * [Configuration](#configuration)
 * [Metrics](#metrics)
 * [Endpoints](#endpoints)
+* [Authentication](#authentication)
 * [Setup Exporter](#setup-exporter)
   * [Container Image](#container-image)
   * [Systemd service](#systemd-service)
@@ -171,6 +172,17 @@ The DayZ exporter exposes several useful endpoints for monitoring and troublesho
 
 </center>
 <!-- markdownlint-enable MD033 -->
+
+## Authentication
+
+Authentication can be configured through the settings. It will be enabled
+if the `password` is provided, with the default value for `username`
+being `metrics`.
+
+> [!TIP]  
+> By default, the `/health`, `/health/liveness`, and `/health/readiness`
+> routes are excluded from authentication. You can also enable authentication
+> for these routes by setting the `health_auth` parameter to `true`.
 
 ## Setup Exporter
 

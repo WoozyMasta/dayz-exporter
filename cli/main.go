@@ -31,17 +31,26 @@ func runApp() {
 		log.Fatalf("Failed to establish connections to RCON port %s:%d", config.Rcon.IP, config.Rcon.Port)
 	}
 
+	// init router
+	mux := http.NewServeMux()
+
 	// handle metrics
-	http.Handle(config.Listen.Endpoint, connection.metricsHandler())
+	mux.Handle(config.Listen.Endpoint, connection.metricsHandler())
 
 	// handle probes
-	http.HandleFunc("/", connection.rootHandler)
-	http.HandleFunc("/health", connection.livenessHandler)
-	http.HandleFunc("/health/liveness", connection.livenessHandler)
-	http.HandleFunc("/health/readiness", connection.readinessHandler)
+	mux.HandleFunc("/", connection.rootHandler)
+	mux.HandleFunc("/health", connection.livenessHandler)
+	mux.HandleFunc("/health/liveness", connection.livenessHandler)
+	mux.HandleFunc("/health/readiness", connection.readinessHandler)
+
+	// add auth middleware if password set
+	var handler http.Handler = mux
+	if config.Listen.Password != "" {
+		handler = basicAuthMiddleware(mux, config.Listen)
+	}
 
 	// serve
 	addr := fmt.Sprintf("%s:%d", config.Listen.IP, config.Listen.Port)
 	log.Infof("Starting metrics server at %s", addr)
-	log.Fatal(http.ListenAndServe(addr, nil))
+	log.Fatal(http.ListenAndServe(addr, handler))
 }

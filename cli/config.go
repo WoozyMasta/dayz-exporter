@@ -24,9 +24,12 @@ type Config struct {
 
 // listen settings for exporter
 type Listen struct {
-	IP       string `yaml:"ip,omitempty" env:"IP, default=0.0.0.0"`
-	Port     uint16 `yaml:"port,omitempty" env:"PORT, default=8098"`
-	Endpoint string `yaml:"endpoint,omitempty" env:"ENDPOINT, default=/metrics"`
+	IP         string `yaml:"ip,omitempty" env:"IP, default=0.0.0.0"`
+	Port       uint16 `yaml:"port,omitempty" env:"PORT, default=8098"`
+	Endpoint   string `yaml:"endpoint,omitempty" env:"ENDPOINT, default=/metrics"`
+	Username   string `yaml:"username,omitempty" env:"USERNAME, default=metrics"`
+	Password   string `yaml:"password,omitempty" env:"PASSWORD"`
+	HealthAuth bool   `yaml:"health_auth,omitempty" env:"HEALTH_AUTH, default=false"`
 }
 
 // Steam A2S query connection settings

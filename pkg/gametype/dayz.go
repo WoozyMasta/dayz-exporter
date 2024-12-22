@@ -7,20 +7,20 @@ import (
 )
 
 type DayZ struct {
+	Shard          string
+	Time           time.Duration
+	TimeDayAccel   float64
+	TimeNightAccel float64
+	GamePort       uint16
+	PlayersQueue   uint8
 	BattlEye       bool
 	NoThirdPerson  bool
 	External       bool
 	PrivateHive    bool
-	Shard          string
-	PlayersQueue   uint8
-	TimeDayAccel   float64
-	TimeNightAccel float64
 	Modded         bool
-	GamePort       uint16
 	Whitelist      bool
 	FlePatching    bool
 	DLC            bool
-	Time           time.Duration
 }
 
 // parse A2S INFO gametype data for DayZ

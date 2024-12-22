@@ -14,21 +14,21 @@ const defaultConfigPath = "config.yaml"
 
 // main config structure
 type Config struct {
+	Labels  map[string]string `yaml:"labels,omitempty" env:"DAYZ_EXPORTER_LABELS"`
+	Logging logging.LogConfig `yaml:"logging,omitempty" env:", prefix=DAYZ_EXPORTER_"`
+	GeoDB   string            `yaml:"geo_db,omitempty" env:"DAYZ_EXPORTER_GEOIP_DB"`
 	Listen  Listen            `yaml:"listen,omitempty" env:", prefix=DAYZ_EXPORTER_LISTEN_"`
 	Query   Query             `yaml:"query,omitempty" env:", prefix=DAYZ_EXPORTER_QUERY_"`
 	Rcon    Rcon              `yaml:"rcon,omitempty" env:", prefix=DAYZ_EXPORTER_RCON_"`
-	Labels  map[string]string `yaml:"labels,omitempty" env:"DAYZ_EXPORTER_LABELS"`
-	GeoDB   string            `yaml:"geo_db,omitempty" env:"DAYZ_EXPORTER_GEOIP_DB"`
-	Logging logging.LogConfig `yaml:"logging,omitempty" env:", prefix=DAYZ_EXPORTER_"`
 }
 
 // listen settings for exporter
 type Listen struct {
 	IP         string `yaml:"ip,omitempty" env:"IP, default=0.0.0.0"`
-	Port       uint16 `yaml:"port,omitempty" env:"PORT, default=8098"`
 	Endpoint   string `yaml:"endpoint,omitempty" env:"ENDPOINT, default=/metrics"`
 	Username   string `yaml:"username,omitempty" env:"USERNAME, default=metrics"`
 	Password   string `yaml:"password,omitempty" env:"PASSWORD"`
+	Port       uint16 `yaml:"port,omitempty" env:"PORT, default=8098"`
 	HealthAuth bool   `yaml:"health_auth,omitempty" env:"HEALTH_AUTH, default=false"`
 }
 
@@ -41,12 +41,12 @@ type Query struct {
 // BattleEye RCON connection settings
 type Rcon struct {
 	IP               string `yaml:"ip,omitempty" env:"IP, default=127.0.0.1"`
-	Port             uint16 `yaml:"port,omitempty" env:"PORT, default=2305"`
 	Password         string `yaml:"password" env:"PASSWORD"`
-	Bans             bool   `yaml:"expose_bans,omitempty" env:"EXPOSE_BANS, default=false"`
 	BufferSize       int    `yaml:"buffer_size,omitempty" env:"BUFFER_SIZE, default=1024"`
 	KeepaliveTimeout int    `yaml:"keepalive_timeout,omitempty" env:"KEEPALIVE_TIMEOUT, default=30"`
 	DeadlineTimeout  int    `yaml:"deadline_timeout,omitempty" env:"DEADLINE_TIMEOUT, default=5"`
+	Port             uint16 `yaml:"port,omitempty" env:"PORT, default=2305"`
+	Bans             bool   `yaml:"expose_bans,omitempty" env:"EXPOSE_BANS, default=false"`
 }
 
 // config loader

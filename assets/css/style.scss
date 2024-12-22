@@ -33,3 +33,43 @@ section {
   background-color: #9b852f;
   border: 1px solid #9b9351;
 }
+
+.admonition-tip {
+  background-color: #93bd20;
+  color: #151515;
+  border-left: 5px solid #659e10;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+.admonition-note {
+  background-color: #9b852f;
+  color: #151515;
+  border-left: 5px solid #ac4142;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+.admonition-important {
+  background-color: #ac4142;
+  color: white;
+  border-left: 5px solid #bdac20;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+.admonition-warning {
+  background-color: #d7cfbe;
+  color: #151515;
+  border-left: 5px solid #d28445;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+.admonition-caution {
+  background-color: #e8e8e8;
+  color: #6a9fb5;
+  border-left: 5px solid #75b5aa;
+  padding: 10px;
+  margin: 10px 0;
+}

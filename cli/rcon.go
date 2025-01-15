@@ -91,12 +91,13 @@ func setupConnection(cfg *Config) (*connection, error) {
 func (c *connection) updateServerMetrics() error {
 	info, err := c.query.GetInfo()
 	if err != nil {
-		return fmt.Errorf("failed to get A2S info query response: %w", err)
+		log.Error().Err(err).Msg("Failed to get A2S info query response")
+		return err
 	}
 
 	c.collector.UpdateServerMetrics(info)
+	log.Trace().Msg("Server A2S metrics updated")
 
-	log.Trace().Msgf("metrics updated: server A2S info")
 	return nil
 }
 
@@ -104,7 +105,8 @@ func (c *connection) updateServerMetrics() error {
 func (c *connection) updatePlayersMetrics() error {
 	data, err := c.rcon.Send("players")
 	if err != nil {
-		return fmt.Errorf("failed to send 'players' command: %w", err)
+		log.Error().Err(err).Msg("Failed to send 'players' command")
+		return err
 	}
 
 	playersData := beparser.Parse(data, "players")
@@ -113,28 +115,32 @@ func (c *connection) updatePlayersMetrics() error {
 			players.SetCountryCode(c.geo)
 		}
 		c.collector.UpdatePlayerMetrics(players)
-	} else {
-		return fmt.Errorf("unexpected data type for 'players' response")
+		log.Trace().Msg("Player metrics updated")
+
+		return nil
 	}
 
-	log.Trace().Msgf("metrics updated: players data")
-	return nil
+	log.Warn().Msg("Unexpected data type for 'players' response")
+	return fmt.Errorf("unexpected data type for 'players' response")
 }
 
 // get and update bans metrics from BattleEye RCON
 func (c *connection) updateBansMetrics() error {
 	if !c.bans {
+		log.Debug().Msg("Ban metrics disabled, skipping update")
 		return nil
 	}
 
 	_, err := c.rcon.Send("loadBans")
 	if err != nil {
-		return fmt.Errorf("failed to send 'loadBans' command: %w", err)
+		log.Error().Err(err).Msg("Failed to send 'loadBans' command")
+		return err
 	}
 
 	data, err := c.rcon.Send("bans")
 	if err != nil {
-		return fmt.Errorf("failed to send 'bans' command: %w", err)
+		log.Error().Err(err).Msg("Failed to send 'bans' command")
+		return err
 	}
 
 	bansData := beparser.Parse(data, "bans")
@@ -143,12 +149,12 @@ func (c *connection) updateBansMetrics() error {
 			bans.SetCountryCode(c.geo)
 		}
 		c.collector.UpdateBansMetrics(bans)
-	} else {
-		return fmt.Errorf("unexpected data type for 'bans' response")
+		log.Trace().Msg("Bans metrics updated")
+		return nil
 	}
 
-	log.Trace().Msgf("metrics updated: bans data")
-	return nil
+	log.Warn().Msg("Unexpected data type for 'bans' response")
+	return fmt.Errorf("unexpected data type for 'bans' response")
 }
 
 // http handler for update metrics for each request
@@ -176,20 +182,23 @@ func (c *connection) metricsHandler() http.HandlerFunc {
 // error handler in http connection
 func (c *connection) handleError(w http.ResponseWriter, err error, context string) {
 	if err != nil {
-		log.Error().Err(err)
+		log.Error().Err(err).Str("context", context).Msg("Error updating metrics")
 	}
 
 	defer func() {
+		log.Debug().Msg("Resetting metrics and closing connections")
 		c.collector.ResetMetrics()
 
 		if err := c.query.Close(); err != nil {
-			log.Error().Msgf("Cant close query connection")
+			log.Error().Msg("Cant close query connection")
 		}
 		if err := c.rcon.Close(); err != nil {
-			log.Error().Msgf("Cant close rcon connection")
+			log.Error().Msg("Cant close rcon connection")
 		}
-		if err := c.geo.Close(); err != nil {
-			log.Error().Msgf("Cant close geo ip database file")
+		if c.geo != nil {
+			if err := c.geo.Close(); err != nil {
+				log.Error().Msg("Cant close geo ip database file")
+			}
 		}
 	}()
 

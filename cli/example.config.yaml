@@ -35,4 +35,4 @@ rcon:
 logging:
   level: info  # Logging level. Options: 'debug', 'info', 'warn', 'error' (DAYZ_EXPORTER_LOG_LEVEL)
   format: text  # Logging format. Options: 'text' (human-readable) or 'json' (structured) (DAYZ_EXPORTER_LOG_FORMAT)
-  output: stderr  # Output destination for logs. Options: 'stderr' (default) or 'stdout' or a file path (DAYZ_EXPORTER_LOG_OUTPUT)
+  output: stdout  # Output destination for logs. Options: 'stdout' (default) or 'stderr' or a file path (DAYZ_EXPORTER_LOG_OUTPUT)

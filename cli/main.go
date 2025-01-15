@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/rs/zerolog/hlog"
 	"github.com/rs/zerolog/log"
 	"github.com/woozymasta/dayz-exporter/internal/service"
 )
@@ -32,7 +33,7 @@ func runApp() {
 		log.Fatal().Msgf("Failed to establish connections to RCON port %s:%d", config.Rcon.IP, config.Rcon.Port)
 	}
 
-	// init router
+	// create mux
 	mux := http.NewServeMux()
 
 	// handle metrics
@@ -44,17 +45,37 @@ func runApp() {
 	mux.HandleFunc("/health/liveness", connection.livenessHandler)
 	mux.HandleFunc("/health/readiness", connection.readinessHandler)
 
-	// add auth middleware if password set
 	var handler http.Handler = mux
+
+	// add basic auth if password is set
 	if config.Listen.Password != "" {
-		handler = basicAuthMiddleware(mux, config.Listen)
+		handler = basicAuthMiddleware(handler, config.Listen)
 	}
 
-	// serve
+	// wrap all with zerolog/hlog
+	// hlog.NewHandler -> hlog.AccessHandler -> hlog.RemoteAddrHandler -> ...
+	handler = hlog.NewHandler(log.Logger)(
+		hlog.AccessHandler(func(r *http.Request, status, size int, duration time.Duration) {
+			log.Info().
+				Str("method", r.Method).
+				Str("url", r.URL.String()).
+				Str("remote", r.RemoteAddr).
+				Int("status", status).
+				Int("size", size).
+				Dur("duration", duration).
+				Msg("HTTP request completed")
+		})(
+			hlog.RemoteAddrHandler("ip")(
+				hlog.UserAgentHandler("user_agent")(
+					hlog.RefererHandler("referer")(handler),
+				),
+			),
+		),
+	)
+
 	addr := fmt.Sprintf("%s:%d", config.Listen.IP, config.Listen.Port)
 	log.Info().Msgf("Starting metrics server at %s", addr)
 
-	// create HTTP-server with timeouts
 	server := &http.Server{
 		Addr:              addr,
 		Handler:           handler,
@@ -65,6 +86,6 @@ func runApp() {
 	}
 
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		log.Fatal().Err(err)
+		log.Fatal().Err(err).Msg("Metrics server failed")
 	}
 }

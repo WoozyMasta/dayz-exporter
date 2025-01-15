@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning][].
 
 * `a2s_info_ping_seconds` metric with A2S_INFO response time in seconds
 * read/idle/write timeouts in http server listener
+* extend logging
 * `.golangci.yml` config and fix linting issues
 * automatically turn on colors in log if terminal is used
 * simple css style for index page
@@ -26,10 +27,13 @@ and this project adheres to [Semantic Versioning][].
 
 ### Changed
 
+* fixed the `game` label previously could use the server description,
+  now only the `folder` from `a2s`
 * update Grafana dashboard panels
 * replaced `github.com/rumblefrog/go-a2s` with `github.com/woozymasta/a2s`
 * replaced `github.com/sirupsen/logrus` with `github.com/rs/zerolog`
 * internal dependencies for cli are moved to `internal/`
+* logs are output to `stdout` rather than `stderr`
 
 [0.3.0]: https://github.com/WoozyMasta/dayz-exporter/compare/v0.2.0...v0.3.0
 

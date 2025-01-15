@@ -31,7 +31,7 @@ func parseArgs() {
 	case "--get-env", "-e":
 		printExampleConfig(".env file", exampleEnv)
 	default:
-		fmt.Println("Unknown command. Use --help for a list of available commands.")
+		fmt.Fprintf(os.Stderr, "Unknown command. Use --help for a list of available commands.")
 		os.Exit(0)
 	}
 }

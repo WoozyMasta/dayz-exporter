@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"internal/vars"
 	"net/http"
+	"strings"
 
 	"github.com/rs/zerolog/log"
 )
@@ -18,44 +19,57 @@ const docsURL = "https://woozymasta.github.io/dayz-exporter/"
 // check is alive
 func (c *connection) livenessHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
+		log.Debug().Str("method", r.Method).Msg("Method not allowed on liveness")
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
 	if !c.rcon.IsAlive() {
+		log.Warn().Msg("BattleEye RCON not connected")
 		http.Error(w, "BattleEye RCON not connected", http.StatusServiceUnavailable)
 		return
 	}
 
+	log.Trace().Msg("Liveness check OK")
 	w.WriteHeader(http.StatusOK)
 	if _, err := w.Write([]byte("OK")); err != nil {
-		log.Error().Msgf("liveness probe: %v", err)
+		log.Error().Err(err).Msg("Error writing liveness response")
 	}
 }
 
 // simple OK if up and ready to handle requests
 func (c *connection) readinessHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
+		log.Debug().Str("method", r.Method).Msg("Method not allowed on readiness")
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
+	log.Trace().Msg("Readiness check OK")
 	w.WriteHeader(http.StatusOK)
 	if _, err := w.Write([]byte("OK")); err != nil {
-		log.Error().Msgf("readiness probe: %v", err)
+		log.Error().Err(err).Msg("Error writing readiness response")
 	}
 }
 
 func (c *connection) rootHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
+		log.Debug().Str("method", r.Method).Msg("Method not allowed on index page")
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
-	game := c.info.Game
-	if game == "" {
-		game = c.info.Folder
+	var serverInfo strings.Builder
+	serverInfo.WriteString("server: " + c.info.Name + "\n")
+	if c.info.Game != "" {
+		serverInfo.WriteString("description: " + c.info.Game + "\n")
 	}
+	serverInfo.WriteString(
+		"map: " + c.info.Map + "\n" +
+			"game: " + c.info.Folder + "\n" +
+			"os: " + c.info.Environment.String() + "\n" +
+			"version: " + c.info.Version,
+	)
 
 	w.Header().Set("Content-Type", "text/html")
 	w.WriteHeader(http.StatusOK)
@@ -85,11 +99,7 @@ func (c *connection) rootHandler(w http.ResponseWriter, r *http.Request) {
 		<hr/>
 		<p>Game server information:</p>
 		<pre>
-server: ` + c.info.Name + `
-map: ` + c.info.Map + `
-game: ` + game + `
-os: ` + c.info.Environment.String() + `
-version: ` + c.info.Version + `
+` + serverInfo.String() + `
 		</pre>
 		<p>Exporter information:</p>
 		<pre>

@@ -4,19 +4,23 @@ import (
 	"encoding/base64"
 	"net/http"
 	"strings"
+
+	"github.com/rs/zerolog/log"
 )
 
 // Middleware for Basic Auth
-func basicAuthMiddleware(mux http.Handler, config Listen) http.Handler {
+func basicAuthMiddleware(next http.Handler, config Listen) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// exclude probes
+		// exclude probes if config.HealthAuth == false
 		if !config.HealthAuth && strings.HasPrefix(r.URL.Path, "/health") {
-			mux.ServeHTTP(w, r)
+			log.Trace().Msg("Health check endpoint, skipping auth")
+			next.ServeHTTP(w, r)
 			return
 		}
 
 		auth := r.Header.Get("Authorization")
 		if auth == "" || !strings.HasPrefix(auth, "Basic ") {
+			log.Warn().Msg("No or invalid 'Authorization' header, returning 401")
 			w.Header().Set("WWW-Authenticate", `Basic realm="Restricted"`)
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
@@ -24,17 +28,30 @@ func basicAuthMiddleware(mux http.Handler, config Listen) http.Handler {
 
 		payload, err := base64.StdEncoding.DecodeString(auth[len("Basic "):])
 		if err != nil {
+			log.Error().Err(err).Msg("Failed to decode base64 authorization header")
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
 
 		pair := strings.SplitN(string(payload), ":", 2)
-		if len(pair) != 2 || pair[0] != config.Username || pair[1] != config.Password {
+		if len(pair) != 2 {
+			log.Debug().Msg("Malformed auth header, returning 401")
 			w.Header().Set("WWW-Authenticate", `Basic realm="Restricted"`)
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
 
-		mux.ServeHTTP(w, r)
+		username, password := pair[0], pair[1]
+		if username != config.Username || password != config.Password {
+			log.Warn().
+				Str("username", username).
+				Msg("Authorization failed, wrong username or password")
+			w.Header().Set("WWW-Authenticate", `Basic realm="Restricted"`)
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		log.Debug().Msg("User authorized successfully")
+		next.ServeHTTP(w, r)
 	})
 }

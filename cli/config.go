@@ -56,13 +56,22 @@ type Rcon struct {
 // Steam A2S query connection settings
 type Logging struct {
 	Level  string `yaml:"level,omitempty" env:"LEVEL, default=info"`
-	Format string `yaml:"format,omitempty" env:"FORMAT, default=json"`
-	Output string `yaml:"output,omitempty" env:"OUTPUT, default=stderr"`
+	Format string `yaml:"format,omitempty" env:"FORMAT, default=text"`
+	Output string `yaml:"output,omitempty" env:"OUTPUT, default=stdout"`
 }
 
 // config loader
 func loadConfig() (*Config, error) {
 	var config Config
+
+	// initial prepare log level from env for debuging purpose
+	if lvl := os.Getenv("DAYZ_EXPORTER_LOG_LEVEL"); lvl != "" {
+		if logLevel, err := zerolog.ParseLevel(lvl); err == nil {
+			log.Logger = log.Level(logLevel)
+		}
+	} else {
+		log.Logger = log.Level(zerolog.InfoLevel)
+	}
 
 	// load config from file if is exists
 	if path, ok := getConfigPath(); ok {
@@ -122,6 +131,7 @@ func getConfigPath() (string, bool) {
 		return defaultConfigPath, true
 	}
 
+	log.Trace().Msg("Config file not provided and not found default, work with defaults and environment variables")
 	return "", false
 }
 

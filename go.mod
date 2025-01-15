@@ -27,6 +27,7 @@ require (
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.61.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
+	github.com/rs/xid v1.5.0 // indirect
 	github.com/woozymasta/steam v0.1.2 // indirect
 	google.golang.org/protobuf v1.36.3 // indirect
 )

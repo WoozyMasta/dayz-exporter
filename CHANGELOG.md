@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning][].
 * `.golangci.yml` config and fix linting issues
 * automatically turn on colors in log if terminal is used
 * simple css style for index page
+* 32x32 and 64x64 winres icons for cli
 
 ### Changed
 

@@ -2,14 +2,11 @@ package bemetrics
 
 // contains a set of additional static labels that are added to metrics
 type Labels []Label
+
+// contains a set of additional static labels that are added to metrics
 type Label struct {
 	Key   string
 	Value string
-}
-
-// creates an empty Labels instance
-func NewLabels(customLabels Labels) *Labels {
-	return &Labels{}
 }
 
 // returns all labels keys

@@ -6,8 +6,8 @@ import (
 
 	"github.com/oschwald/geoip2-golang"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/rumblefrog/go-a2s"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
+	"github.com/woozymasta/a2s/pkg/a2s"
 	"github.com/woozymasta/bercon-cli/pkg/beparser"
 	"github.com/woozymasta/bercon-cli/pkg/bercon"
 	"github.com/woozymasta/dayz-exporter/pkg/bemetrics"
@@ -18,7 +18,7 @@ type connection struct {
 	query     *a2s.Client                 // connection to A2S Steam Query
 	collector *bemetrics.MetricsCollector // metrics collector
 	geo       *geoip2.Reader              // reader for geoip DB
-	info      *a2s.ServerInfo             // server information
+	info      *a2s.Info                   // server information
 	bans      bool                        // flag for enable/disable bans metrics
 }
 
@@ -41,16 +41,16 @@ func setupConnection(cfg *Config) (*connection, error) {
 	rcon.StartKeepAlive()
 
 	// create connection to Steam A2S Query
-	query, err := a2s.NewClient(fmt.Sprintf("%s:%d", cfg.Query.IP, cfg.Query.Port))
+	query, err := a2s.New(cfg.Query.IP, cfg.Query.Port)
 	if err != nil {
 		return nil, err
 	}
-	info, err := query.QueryInfo()
+	info, err := query.GetInfo()
 	if err != nil {
 		return nil, err
 	}
 
-	log.Infof("Connected to \"%s\" (%s) server on %s:%d", info.Name, info.Map, cfg.Query.IP, cfg.Query.Port)
+	log.Info().Msgf("Connected to \"%s\" (%s) server on %s:%d", info.Name, info.Map, cfg.Query.IP, cfg.Query.Port)
 
 	// create bemetrics metrics collector
 	collector := bemetrics.NewMetricsCollector(makeLabels(info, cfg.Labels))
@@ -59,9 +59,9 @@ func setupConnection(cfg *Config) (*connection, error) {
 	if cfg.GeoDB != "" {
 		geoDB, err = geoip2.Open(cfg.GeoDB)
 		if err != nil {
-			log.Errorf("Cant open GeoDB %e", err)
+			log.Error().Msgf("Cant open GeoDB %e", err)
 		}
-		log.Traceln("GeoDB loaded success")
+		log.Trace().Msgf("GeoDB loaded success")
 	}
 
 	// init connection structure
@@ -89,14 +89,14 @@ func setupConnection(cfg *Config) (*connection, error) {
 
 // get and update server metrics from Steam A2S Query
 func (c *connection) updateServerMetrics() error {
-	info, err := c.query.QueryInfo()
+	info, err := c.query.GetInfo()
 	if err != nil {
 		return fmt.Errorf("failed to get A2S info query response: %w", err)
 	}
 
 	c.collector.UpdateServerMetrics(info)
 
-	log.Traceln("metrics updated: server A2S info")
+	log.Trace().Msgf("metrics updated: server A2S info")
 	return nil
 }
 
@@ -117,7 +117,7 @@ func (c *connection) updatePlayersMetrics() error {
 		return fmt.Errorf("unexpected data type for 'players' response")
 	}
 
-	log.Traceln("metrics updated: players data")
+	log.Trace().Msgf("metrics updated: players data")
 	return nil
 }
 
@@ -147,7 +147,7 @@ func (c *connection) updateBansMetrics() error {
 		return fmt.Errorf("unexpected data type for 'bans' response")
 	}
 
-	log.Traceln("metrics updated: bans data")
+	log.Trace().Msgf("metrics updated: bans data")
 	return nil
 }
 
@@ -167,7 +167,7 @@ func (c *connection) metricsHandler() http.HandlerFunc {
 			return
 		}
 
-		log.Debugf("Metrics updated")
+		log.Debug().Msgf("Metrics updated")
 		// pass control over the standard handler prometheus
 		promhttp.Handler().ServeHTTP(w, r)
 	}
@@ -175,11 +175,24 @@ func (c *connection) metricsHandler() http.HandlerFunc {
 
 // error handler in http connection
 func (c *connection) handleError(w http.ResponseWriter, err error, context string) {
-	c.collector.ResetMetrics()
-	c.query.Close()
-	c.rcon.Close()
-	c.geo.Close()
+	if err != nil {
+		log.Error().Err(err)
+	}
+
+	defer func() {
+		c.collector.ResetMetrics()
+
+		if err := c.query.Close(); err != nil {
+			log.Error().Msgf("Cant close query connection")
+		}
+		if err := c.rcon.Close(); err != nil {
+			log.Error().Msgf("Cant close rcon connection")
+		}
+		if err := c.geo.Close(); err != nil {
+			log.Error().Msgf("Cant close geo ip database file")
+		}
+	}()
 
 	http.Error(w, fmt.Sprintf("Error updating metrics (%s)", context), http.StatusInternalServerError)
-	log.WithError(err).Fatalf("Failed to update metrics (%s)", context)
+	log.Fatal().Msgf("Failed to update metrics (%s)", context)
 }

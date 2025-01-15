@@ -4,7 +4,7 @@
 package service
 
 import (
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 
 	"golang.org/x/sys/windows/svc"
 )
@@ -14,7 +14,7 @@ type windowsServiceHandler struct {
 	runApp func()
 }
 
-func (h *windowsServiceHandler) Execute(args []string, r <-chan svc.ChangeRequest, s chan<- svc.Status) (bool, uint32) {
+func (h *windowsServiceHandler) Execute(_ []string, r <-chan svc.ChangeRequest, s chan<- svc.Status) (bool, uint32) {
 	s <- svc.Status{State: svc.StartPending}
 	go h.runApp()
 	s <- svc.Status{State: svc.Running, Accepts: svc.AcceptStop}
@@ -41,6 +41,6 @@ func IsServiceMode() bool {
 func RunAsService(runApp func()) {
 	err := svc.Run("dayz-exporter", &windowsServiceHandler{runApp: runApp})
 	if err != nil {
-		log.Fatalf("Service fail with error: %v", err)
+		log.Fatal().Msgf("Service fail with error: %v", err)
 	}
 }

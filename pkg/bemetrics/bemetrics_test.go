@@ -8,7 +8,7 @@ import (
 
 	"github.com/oschwald/geoip2-golang"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/rumblefrog/go-a2s"
+	"github.com/woozymasta/a2s/pkg/a2s"
 	"github.com/woozymasta/bercon-cli/pkg/beparser"
 	"github.com/woozymasta/bercon-cli/pkg/bercon"
 )
@@ -102,11 +102,11 @@ func TestMetricsFromBercon(t *testing.T) {
 	address, password, query_address := initVars()
 
 	// connect to A2S Query
-	query, err := a2s.NewClient(query_address)
+	query, err := a2s.NewWithString(query_address)
 	if err != nil {
 		t.Fatalf("Error connecting to A2S Query: %v", err)
 	}
-	info, err := query.QueryInfo()
+	info, err := query.GetInfo()
 	if err != nil {
 		t.Fatalf("Error query A2S_INFO: %v", err)
 	}
@@ -189,10 +189,10 @@ func TestBansMetricsFromBerconSeparateRegistry(t *testing.T) {
 	// initialize and register metrics for players
 	mc := NewMetricsCollector(getCustomLabels())
 	mc.InitBansMetrics()
-	reg.MustRegister(mc.banGuidTimeMetric)
-	reg.MustRegister(mc.banGuidTotal)
-	reg.MustRegister(mc.banIpTimeMetric)
-	reg.MustRegister(mc.banIpTotal)
+	reg.MustRegister(mc.banGUIDTimeMetric)
+	reg.MustRegister(mc.banGUIDTotal)
+	reg.MustRegister(mc.banIPTimeMetric)
+	reg.MustRegister(mc.banIPTotal)
 
 	// update metrics with player data
 	mc.UpdateBansMetrics(bans)

@@ -101,6 +101,7 @@ each player or entry in the ban list.
 <!-- omit in toc -->
 ### Steam Query A2S INFO metrics
 
+* **`a2s_info_ping_seconds`** — Server A2S_INFO response time in seconds;
 * **`a2s_info_players_online`** — Online players;
 * **`a2s_info_players_slots`** — Players slots count;
 * **`a2s_info_players_queue`** — Players wait in queue;

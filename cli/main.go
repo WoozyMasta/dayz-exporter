@@ -3,9 +3,10 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
 
-	log "github.com/sirupsen/logrus"
-	"github.com/woozymasta/dayz-exporter/pkg/service"
+	"github.com/rs/zerolog/log"
+	"github.com/woozymasta/dayz-exporter/internal/service"
 )
 
 func main() {
@@ -23,12 +24,12 @@ func runApp() {
 
 	config, err := loadConfig()
 	if err != nil {
-		log.Fatalf("Load config failed: %s", err)
+		log.Fatal().Msgf("Load config failed: %s", err)
 	}
 
 	connection, err := setupConnection(config)
 	if err != nil {
-		log.Fatalf("Failed to establish connections to RCON port %s:%d", config.Rcon.IP, config.Rcon.Port)
+		log.Fatal().Msgf("Failed to establish connections to RCON port %s:%d", config.Rcon.IP, config.Rcon.Port)
 	}
 
 	// init router
@@ -51,6 +52,19 @@ func runApp() {
 
 	// serve
 	addr := fmt.Sprintf("%s:%d", config.Listen.IP, config.Listen.Port)
-	log.Infof("Starting metrics server at %s", addr)
-	log.Fatal(http.ListenAndServe(addr, handler))
+	log.Info().Msgf("Starting metrics server at %s", addr)
+
+	// create HTTP-server with timeouts
+	server := &http.Server{
+		Addr:              addr,
+		Handler:           handler,
+		ReadHeaderTimeout: 3 * time.Second,
+		IdleTimeout:       60 * time.Second,
+		WriteTimeout:      10 * time.Second,
+		ReadTimeout:       5 * time.Second,
+	}
+
+	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Fatal().Err(err)
+	}
 }

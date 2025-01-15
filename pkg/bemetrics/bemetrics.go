@@ -11,10 +11,11 @@ type MetricsCollector struct {
 	playersOnline       *prometheus.GaugeVec
 	playersLobby        *prometheus.GaugeVec
 	playersInvalid      *prometheus.GaugeVec
-	banGuidTimeMetric   *prometheus.GaugeVec
-	banGuidTotal        *prometheus.GaugeVec
-	banIpTimeMetric     *prometheus.GaugeVec
-	banIpTotal          *prometheus.GaugeVec
+	banGUIDTimeMetric   *prometheus.GaugeVec
+	banGUIDTotal        *prometheus.GaugeVec
+	banIPTimeMetric     *prometheus.GaugeVec
+	banIPTotal          *prometheus.GaugeVec
+	serverPing          *prometheus.GaugeVec
 	serverPlayersOnline *prometheus.GaugeVec
 	serverPlayersSlots  *prometheus.GaugeVec
 	serverPlayersQueue  *prometheus.GaugeVec
@@ -39,11 +40,12 @@ func (mc *MetricsCollector) getAllMetrics() []prometheus.Collector {
 		mc.playersInvalid,
 		mc.playersLobby,
 		// bans
-		mc.banGuidTimeMetric,
-		mc.banGuidTotal,
-		mc.banIpTimeMetric,
-		mc.banIpTotal,
+		mc.banGUIDTimeMetric,
+		mc.banGUIDTotal,
+		mc.banIPTimeMetric,
+		mc.banIPTotal,
 		// server
+		mc.serverPing,
 		mc.serverPlayersOnline,
 		mc.serverPlayersSlots,
 		mc.serverPlayersQueue,

@@ -3,11 +3,10 @@ package main
 import (
 	_ "embed"
 	"fmt"
+	"internal/vars"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/woozymasta/dayz-exporter/pkg/config"
 )
 
 //go:embed example.config.yaml
@@ -24,9 +23,9 @@ func parseArgs() {
 
 	switch os.Args[1] {
 	case "--help", "-h":
-		printHelp(filepath.Base(os.Args[0]))
+		printHelp()
 	case "--version", "-v":
-		printVersion(filepath.Base(os.Args[0]))
+		printVersion()
 	case "--get-yaml", "-y":
 		printExampleConfig("YAML config", exampleConfig)
 	case "--get-env", "-e":
@@ -45,8 +44,8 @@ func printExampleConfig(name string, content []byte) {
 }
 
 // just print help message and exit
-func printHelp(binary string) {
-	helpText := fmt.Sprintf(`%[1]s v%s
+func printHelp() {
+	fmt.Printf(`%[1]s v%s
 Collects and publishes Prometheus metrics from Battleye RCON and Steam A2S Query for DayZ server.
 
 Usage:
@@ -78,14 +77,18 @@ Examples:
 
 YAML config options have higher priority, for mixed use with variables comment out the overridden options.
 For more information on configuration parameters, refer to the example configuration files (YAML and .env).
-`, binary, config.Version)
-
-	fmt.Println(helpText)
+`, filepath.Base(os.Args[0]), vars.Version)
 	os.Exit(0)
 }
 
 // print version information message and exit
-func printVersion(binary string) {
-	fmt.Printf("%s\nversion=%s\ncommit=%s\nbuilt=%s\n", binary, config.Version, config.Commit, config.BuildTime)
+func printVersion() {
+	fmt.Printf(`
+file:     %s
+version:  %s
+commit:   %s
+built:    %s
+project:  %s
+`, os.Args[0], vars.Version, vars.Commit, vars.BuildTime, vars.URL)
 	os.Exit(0)
 }

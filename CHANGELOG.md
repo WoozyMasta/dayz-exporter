@@ -13,6 +13,25 @@ and this project adheres to [Semantic Versioning][].
 ### Removed
 -->
 
+## [0.3.0][] - 2025-01-16
+
+### Added
+
+* `a2s_info_ping_seconds` metric with A2S_INFO response time in seconds
+* read/idle/write timeouts in http server listener
+* `.golangci.yml` config and fix linting issues
+* automatically turn on colors in log if terminal is used
+* simple css style for index page
+
+### Changed
+
+* update Grafana dashboard panels
+* replaced `github.com/rumblefrog/go-a2s` with `github.com/woozymasta/a2s`
+* replaced `github.com/sirupsen/logrus` with `github.com/rs/zerolog`
+* internal dependencies for cli are moved to `internal/`
+
+[0.3.0]: https://github.com/WoozyMasta/dayz-exporter/compare/v0.2.0...v0.3.0
+
 ## [0.2.0][] - 2024-12-22
 
 ### Added
@@ -29,7 +48,7 @@ and this project adheres to [Semantic Versioning][].
 * Workflow action for VirusTotal scan artifacts replaced with version
   that supports file masking in release
 
-[0.2.0]: https://github.com/WoozyMasta/dayz-exporter/releases/tag/v0.2.0
+[0.2.0]: https://github.com/WoozyMasta/dayz-exporter/compare/v0.1.1...v0.2.0
 
 ## [0.1.1][] - 2024-12-07
 
@@ -43,7 +62,7 @@ and this project adheres to [Semantic Versioning][].
 * Disabled UPX packer for Windows binaries to prevent false
   positives from some antivirus
 
-[0.1.1]: https://github.com/WoozyMasta/dayz-exporter/releases/tag/v0.1.1
+[0.1.1]: https://github.com/WoozyMasta/dayz-exporter/compare/v0.1.0...v0.1.1
 
 ## [0.1.0][] - 2024-12-06
 
@@ -51,7 +70,7 @@ and this project adheres to [Semantic Versioning][].
 
 * First public release
 
-[0.1.0]: https://github.com/WoozyMasta/dayz-exporter/releases/tag/v0.1.0
+[0.1.0]: https://github.com/WoozyMasta/dayz-exporter/tree/v0.1.0
 
 <!--links-->
 [Keep a Changelog]: https://keepachangelog.com/en/1.1.0/

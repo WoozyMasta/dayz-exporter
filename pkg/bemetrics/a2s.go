@@ -2,13 +2,23 @@ package bemetrics
 
 import (
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/rumblefrog/go-a2s"
-	"github.com/woozymasta/dayz-exporter/pkg/gametype"
+	"github.com/woozymasta/a2s/pkg/a2s"
+	"github.com/woozymasta/a2s/pkg/keywords"
 )
 
 // initialize a2s server metrics
 func (mc *MetricsCollector) InitServerMetrics() {
 	labels := mc.customLabels.Keys()
+
+	if mc.serverPing == nil {
+		mc.serverPing = prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "a2s_info_ping_seconds",
+				Help: "Server A2S_INFO response time in seconds.",
+			},
+			labels,
+		)
+	}
 
 	if mc.serverPlayersOnline == nil {
 		mc.serverPlayersOnline = prometheus.NewGaugeVec(
@@ -52,11 +62,14 @@ func (mc *MetricsCollector) InitServerMetrics() {
 }
 
 // update a2s server metrics
-func (mc *MetricsCollector) UpdateServerMetrics(serverInfo *a2s.ServerInfo) {
-	var extendedInfo gametype.DayZ
-	extendedInfo.Parse(serverInfo.ExtendedServerInfo.Keywords)
+func (mc *MetricsCollector) UpdateServerMetrics(serverInfo *a2s.Info) {
+	extendedInfo := keywords.ParseDayZ(serverInfo.Keywords)
 
 	values := mc.customLabels.Values()
+
+	if mc.serverPing != nil {
+		mc.serverPing.WithLabelValues(values...).Set(serverInfo.Ping.Seconds())
+	}
 
 	if mc.serverPlayersOnline != nil {
 		mc.serverPlayersOnline.WithLabelValues(values...).Set(float64(serverInfo.Players))

@@ -2,11 +2,15 @@ package main
 
 import (
 	"context"
+	"errors"
+	"io"
 	"os"
+	"time"
 
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/sethvargo/go-envconfig"
-	log "github.com/sirupsen/logrus"
-	"github.com/woozymasta/dayz-exporter/pkg/logging"
+	"golang.org/x/term"
 	"gopkg.in/yaml.v3"
 )
 
@@ -15,7 +19,7 @@ const defaultConfigPath = "config.yaml"
 // main config structure
 type Config struct {
 	Labels  map[string]string `yaml:"labels,omitempty" env:"DAYZ_EXPORTER_LABELS"`
-	Logging logging.LogConfig `yaml:"logging,omitempty" env:", prefix=DAYZ_EXPORTER_"`
+	Logging Logging           `yaml:"logging,omitempty" env:", prefix=DAYZ_EXPORTER_LOG_"`
 	GeoDB   string            `yaml:"geo_db,omitempty" env:"DAYZ_EXPORTER_GEOIP_DB"`
 	Listen  Listen            `yaml:"listen,omitempty" env:", prefix=DAYZ_EXPORTER_LISTEN_"`
 	Query   Query             `yaml:"query,omitempty" env:", prefix=DAYZ_EXPORTER_QUERY_"`
@@ -35,18 +39,25 @@ type Listen struct {
 // Steam A2S query connection settings
 type Query struct {
 	IP   string `yaml:"ip,omitempty" env:"IP, default=127.0.0.1"`
-	Port uint16 `yaml:"port,omitempty" env:"PORT, default=27016"`
+	Port int    `yaml:"port,omitempty" env:"PORT, default=27016"`
 }
 
 // BattleEye RCON connection settings
 type Rcon struct {
 	IP               string `yaml:"ip,omitempty" env:"IP, default=127.0.0.1"`
 	Password         string `yaml:"password" env:"PASSWORD"`
-	BufferSize       int    `yaml:"buffer_size,omitempty" env:"BUFFER_SIZE, default=1024"`
+	BufferSize       uint16 `yaml:"buffer_size,omitempty" env:"BUFFER_SIZE, default=1024"`
 	KeepaliveTimeout int    `yaml:"keepalive_timeout,omitempty" env:"KEEPALIVE_TIMEOUT, default=30"`
 	DeadlineTimeout  int    `yaml:"deadline_timeout,omitempty" env:"DEADLINE_TIMEOUT, default=5"`
-	Port             uint16 `yaml:"port,omitempty" env:"PORT, default=2305"`
+	Port             int    `yaml:"port,omitempty" env:"PORT, default=2305"`
 	Bans             bool   `yaml:"expose_bans,omitempty" env:"EXPOSE_BANS, default=false"`
+}
+
+// Steam A2S query connection settings
+type Logging struct {
+	Level  string `yaml:"level,omitempty" env:"LEVEL, default=info"`
+	Format string `yaml:"format,omitempty" env:"FORMAT, default=json"`
+	Output string `yaml:"output,omitempty" env:"OUTPUT, default=stderr"`
 }
 
 // config loader
@@ -59,7 +70,11 @@ func loadConfig() (*Config, error) {
 		if err != nil {
 			return nil, err
 		}
-		defer configFile.Close()
+		defer func() {
+			if err := configFile.Close(); err != nil {
+				log.Error().Msgf("Cant close config file")
+			}
+		}()
 
 		decoder := yaml.NewDecoder(configFile)
 		err = decoder.Decode(&config)
@@ -74,36 +89,87 @@ func loadConfig() (*Config, error) {
 		return nil, err
 	}
 
+	config.setupLogging()
+
 	if config.Rcon.Password == "" {
-		log.Fatalf("Missing required RCON password")
+		return nil, errors.New("missing required RCON password")
 	}
 
-	// initialize logging
-	logging.InitLogger(&config.Logging)
-
 	if config.GeoDB != "" {
-		log.Tracef("Try find Geo DB file: %s", config.GeoDB)
+		log.Trace().Msgf("Try find Geo DB file: %s", config.GeoDB)
 		if _, err := os.Stat(config.GeoDB); err != nil {
-			log.Warnf("Cant find GeoDB file '%s'", config.GeoDB)
+			log.Warn().Msgf("Cant open GeoDB file '%s'", config.GeoDB)
 			config.GeoDB = ""
 		}
 	}
 
-	log.Tracef("Loaded config: %+v", config)
+	log.Trace().Msgf("Loaded config: %+v", config)
 	return &config, nil
 }
 
 // get path to configuration file from variables, argument or use default
 func getConfigPath() (string, bool) {
 	if path := os.Getenv("DAYZ_EXPORTER_CONFIG_PATH"); path != "" {
+		log.Trace().Msgf("Use config form variable DAYZ_EXPORTER_CONFIG_PATH: %s", path)
 		return path, true
 	}
 	if len(os.Args) > 1 {
+		log.Trace().Msgf("Use config form argument: %s", os.Args[1])
 		return os.Args[1], true
 	}
 	if _, err := os.Stat(defaultConfigPath); err == nil {
+		log.Trace().Msgf("Use default config path: %s", defaultConfigPath)
 		return defaultConfigPath, true
 	}
 
 	return "", false
+}
+
+// configure logging
+func (c *Config) setupLogging() {
+	// setup log level
+	if logLevel, err := zerolog.ParseLevel(c.Logging.Level); err == nil {
+		log.Trace().Msgf("Setup log level to: %s", c.Logging.Level)
+		log.Logger = log.Level(logLevel)
+	} else {
+		log.Warn().Msgf("Log level %s unknown, fallback to Info level", c.Logging.Level)
+		log.Logger = log.Level(zerolog.InfoLevel)
+	}
+
+	// setup log output
+	var writer io.Writer
+	switch c.Logging.Output {
+	case "stdout", "out", "1":
+		writer = os.Stdout
+	case "stderr", "err", "2":
+		writer = os.Stderr
+	default:
+		file, err := os.OpenFile(c.Logging.Output, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Fatal().Err(err).Msgf("Failed to open log file: %s", c.Logging.Output)
+		}
+		writer = file
+	}
+
+	// check need enable colors
+	var useColors bool
+	if f, ok := writer.(*os.File); ok {
+		useColors = term.IsTerminal(int(f.Fd()))
+	} else {
+		useColors = false
+	}
+
+	// setup log format
+	switch c.Logging.Format {
+	case "text":
+		log.Logger = log.Output(zerolog.ConsoleWriter{
+			Out:        writer,
+			TimeFormat: time.RFC3339,
+			NoColor:    !useColors,
+		})
+	case "json":
+		fallthrough
+	default:
+		log.Logger = log.Output(writer)
+	}
 }

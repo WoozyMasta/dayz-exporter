@@ -9,8 +9,8 @@ import (
 func (mc *MetricsCollector) InitBansMetrics() {
 	labels := mc.customLabels.Keys()
 
-	if mc.banGuidTimeMetric == nil {
-		mc.banGuidTimeMetric = prometheus.NewGaugeVec(
+	if mc.banGUIDTimeMetric == nil {
+		mc.banGUIDTimeMetric = prometheus.NewGaugeVec(
 			prometheus.GaugeOpts{
 				Name: "bercon_ban_guid_time_seconds",
 				Help: "Time left for GUID bans in seconds.",
@@ -19,8 +19,8 @@ func (mc *MetricsCollector) InitBansMetrics() {
 		)
 	}
 
-	if mc.banGuidTotal == nil {
-		mc.banGuidTotal = prometheus.NewGaugeVec(
+	if mc.banGUIDTotal == nil {
+		mc.banGUIDTotal = prometheus.NewGaugeVec(
 			prometheus.GaugeOpts{
 				Name: "bercon_ban_guid_total",
 				Help: "Total count of GUID bans.",
@@ -29,8 +29,8 @@ func (mc *MetricsCollector) InitBansMetrics() {
 		)
 	}
 
-	if mc.banIpTimeMetric == nil {
-		mc.banIpTimeMetric = prometheus.NewGaugeVec(
+	if mc.banIPTimeMetric == nil {
+		mc.banIPTimeMetric = prometheus.NewGaugeVec(
 			prometheus.GaugeOpts{
 				Name: "bercon_ban_ip_time_seconds",
 				Help: "Time left for IP bans in seconds.",
@@ -39,8 +39,8 @@ func (mc *MetricsCollector) InitBansMetrics() {
 		)
 	}
 
-	if mc.banIpTotal == nil {
-		mc.banIpTotal = prometheus.NewGaugeVec(
+	if mc.banIPTotal == nil {
+		mc.banIPTotal = prometheus.NewGaugeVec(
 			prometheus.GaugeOpts{
 				Name: "bercon_ban_ip_total",
 				Help: "Total count of IP bans.",
@@ -55,29 +55,29 @@ func (mc *MetricsCollector) UpdateBansMetrics(bans *beparser.Bans) {
 	values := mc.customLabels.Values()
 
 	// update GUID bans
-	if mc.banGuidTimeMetric != nil {
-		mc.banGuidTimeMetric.Reset() // count of metrics is dynamic, reset it always
+	if mc.banGUIDTimeMetric != nil {
+		mc.banGUIDTimeMetric.Reset() // count of metrics is dynamic, reset it always
 
 		for _, ban := range bans.GUIDBans {
-			mc.banGuidTimeMetric.WithLabelValues(append(values, ban.Reason, ban.GUID)...).Set(banSeconds(ban.MinutesLeft))
+			mc.banGUIDTimeMetric.WithLabelValues(append(values, ban.Reason, ban.GUID)...).Set(banSeconds(ban.MinutesLeft))
 		}
 	}
 
-	if mc.banGuidTotal != nil {
-		mc.banGuidTotal.WithLabelValues(values...).Set(float64(len(bans.GUIDBans)))
+	if mc.banGUIDTotal != nil {
+		mc.banGUIDTotal.WithLabelValues(values...).Set(float64(len(bans.GUIDBans)))
 	}
 
 	// update IP bans
-	if mc.banIpTimeMetric != nil {
-		mc.banIpTimeMetric.Reset() // count of metrics is dynamic, reset it always
+	if mc.banIPTimeMetric != nil {
+		mc.banIPTimeMetric.Reset() // count of metrics is dynamic, reset it always
 
 		for _, ban := range bans.IPBans {
-			mc.banIpTimeMetric.WithLabelValues(append(values, ban.Reason, ban.IP, ban.Country)...).Set(banSeconds(ban.MinutesLeft))
+			mc.banIPTimeMetric.WithLabelValues(append(values, ban.Reason, ban.IP, ban.Country)...).Set(banSeconds(ban.MinutesLeft))
 		}
 	}
 
-	if mc.banIpTotal != nil {
-		mc.banIpTotal.WithLabelValues(values...).Set(float64(len(bans.IPBans)))
+	if mc.banIPTotal != nil {
+		mc.banIPTotal.WithLabelValues(values...).Set(float64(len(bans.IPBans)))
 	}
 }
 

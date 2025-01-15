@@ -3,7 +3,7 @@
 
 package service
 
-import log "github.com/sirupsen/logrus"
+import "github.com/rs/zerolog/log"
 
 // always return false on all platforms except windows
 func IsServiceMode() bool {
@@ -12,5 +12,5 @@ func IsServiceMode() bool {
 
 // just fail on all platforms except windows
 func RunAsService(runApp func()) {
-	log.Fatalf("Services not supported on this platform")
+	log.Fatal().Msgf("Services not supported on this platform")
 }

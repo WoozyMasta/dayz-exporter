@@ -14,8 +14,6 @@ var styleCSS []byte
 
 //go:generate minify style.css -o style.min.css
 
-const docsURL = "https://woozymasta.github.io/dayz-exporter/"
-
 // check is alive
 func (c *connection) livenessHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
@@ -87,7 +85,12 @@ func (c *connection) rootHandler(w http.ResponseWriter, r *http.Request) {
 		<h1>DayZ Exporter</h1>
 		<h3>Collects and publishes Prometheus metrics from Battleye RCON and Steam A2S Query for DayZ server.</h3>
 		<p>Source code: <a href="` + vars.URL + `" target="_blank">` + vars.URL + `</a></p>
-		<p>Documentation: <a href="` + docsURL + `" target="_blank">` + docsURL + `</a></p>
+		<p>Documentation: <a href="https://woozymasta.github.io/dayz-exporter/" target="_blank">https://woozymasta.github.io/dayz-exporter/</a></p>
+		<p>Grafana Dashboard
+			<a href="https://grafana.com/grafana/dashboards/22457-dayz-rcon/" target="_blank">on grafana.com</a> or
+			<a href="https://raw.githubusercontent.com/WoozyMasta/dayz-exporter/refs/tags/` + vars.Version + `/grafana/dayz-rcon.json" target="_blank">JSON file in the project</a>
+			or use ID: 22457
+		</p>
 		<hr/>
 		<p>This application exposes the following endpoints:</p>
 		<ul>

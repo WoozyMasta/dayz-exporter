@@ -11,6 +11,6 @@ func IsServiceMode() bool {
 }
 
 // just fail on all platforms except windows
-func RunAsService(runApp func()) {
+func RunAsService(_ func()) {
 	log.Fatal().Msgf("Services not supported on this platform")
 }

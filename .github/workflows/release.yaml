@@ -68,6 +68,9 @@ jobs:
             ghcr.io/woozymasta/dayz-exporter:latest
             docker.io/woozymasta/dayz-exporter:${{ steps.env.outputs.image_tag }}
             docker.io/woozymasta/dayz-exporter:latest
+          build-args: |
+            VERSION=${{ github.ref_name }}
+            COMMIT=${{ github.sha }}
 
       - name: Extract changelog
         id: changelog

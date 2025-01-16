@@ -14,10 +14,12 @@ RUN set -xeu; \
     tar -xvf upx.tar.xz --strip-components=1 "upx-$UPX_VERSION-${ARCH}_linux/upx"; \
     chmod +x upx; \
     mv upx /usr/local/bin/upx; \
-    rm -f upx.tar.xz
+    rm -f upx.tar.xz; \
+    go install github.com/tdewolff/minify/cmd/minify@latest
 
 WORKDIR /src/dayz-exporter
 COPY go.mod go.sum ./
+COPY ./internal/vars ./internal/vars
 RUN go mod download
 
 ENV CGO_ENABLED=0
@@ -27,13 +29,16 @@ ENV GOARCH=$ARCH
 
 COPY ./cli ./cli
 COPY ./pkg ./pkg
+COPY ./internal ./internal
 
 RUN set -eux;\
-    pkg="$(grep -Po 'module \K.*$' go.mod)/pkg/config"; \
-    version="$pkg.Version=$VERSION"; \
-    commit="$pkg.Commit=$COMMIT"; \
-    date="$pkg.BuildTime=$(date -uIs)"; \
-    go build -ldflags="-s -w -X '$version' -X '$commit' -X '$date'" \
+    go mod tidy; \
+    go generate ./...; \
+    go build -ldflags="-s -w \
+        -X 'internal/vars.Version=$VERSION' \
+        -X 'internal/vars.Commit=$COMMIT' \
+        -X 'internal/vars.BuildTime=$(date -uIs)' \
+        -X 'internal/vars.URL=https://$(grep -Po 'module \K.*$' go.mod)'" \
       -o "./dayz-exporter" "cli/"*.go; \
     upx --lzma --best ./dayz-exporter; \
     upx -t ./dayz-exporter

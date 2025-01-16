@@ -23,4 +23,4 @@ command -v cyclonedx-gomod &>/dev/null ||
   go install github.com/CycloneDX/cyclonedx-gomod/cmd/cyclonedx-gomod@latest
 
 command -v minify &>/dev/null ||
-  go install github.com/tdewolff/minify/v2@latest
+  go install github.com/tdewolff/minify/cmd/minify@latest

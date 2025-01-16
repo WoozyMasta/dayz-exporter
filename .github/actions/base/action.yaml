@@ -24,7 +24,7 @@ runs:
 
     - name: Install minify
       shell: bash
-      run: go install github.com/tdewolff/minify/v2@latest
+      run: go install github.com/tdewolff/minify/cmd/minify@latest
 
     - name: Go generate
       shell: bash

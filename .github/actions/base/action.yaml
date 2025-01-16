@@ -22,6 +22,14 @@ runs:
       with:
         go-version: ${{ inputs.go-version }}
 
+    - name: Install minify
+      shell: bash
+      run: go install github.com/tdewolff/minify/v2@latest
+
+    - name: Go generate
+      shell: bash
+      run: go generate ./...
+
     - name: golangci-lint
       uses: golangci/golangci-lint-action@v6
       with:

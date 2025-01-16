@@ -165,7 +165,7 @@ func (c *Config) setupLogging() {
 	var useColors bool
 	if f, ok := writer.(*os.File); ok {
 		// fd is smallest numbers
-		useColors = term.IsTerminal(int(f.Fd())) // #nosec G103
+		useColors = term.IsTerminal(int(f.Fd())) // #nosec G115
 	} else {
 		useColors = false
 	}

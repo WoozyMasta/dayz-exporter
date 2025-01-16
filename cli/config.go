@@ -46,10 +46,10 @@ type Query struct {
 type Rcon struct {
 	IP               string `yaml:"ip,omitempty" env:"IP, default=127.0.0.1"`
 	Password         string `yaml:"password" env:"PASSWORD"`
-	BufferSize       uint16 `yaml:"buffer_size,omitempty" env:"BUFFER_SIZE, default=1024"`
 	KeepaliveTimeout int    `yaml:"keepalive_timeout,omitempty" env:"KEEPALIVE_TIMEOUT, default=30"`
 	DeadlineTimeout  int    `yaml:"deadline_timeout,omitempty" env:"DEADLINE_TIMEOUT, default=5"`
 	Port             int    `yaml:"port,omitempty" env:"PORT, default=2305"`
+	BufferSize       uint16 `yaml:"buffer_size,omitempty" env:"BUFFER_SIZE, default=1024"`
 	Bans             bool   `yaml:"expose_bans,omitempty" env:"EXPOSE_BANS, default=false"`
 }
 

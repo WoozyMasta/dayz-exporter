@@ -7,8 +7,8 @@ require (
 	github.com/prometheus/client_golang v1.20.5
 	github.com/rs/zerolog v1.33.0
 	github.com/sethvargo/go-envconfig v1.1.0
-	github.com/woozymasta/a2s v0.2.1
-	github.com/woozymasta/bercon-cli v0.3.0
+	github.com/woozymasta/a2s v0.2.2
+	github.com/woozymasta/bercon-cli v0.3.1
 	golang.org/x/sys v0.29.0
 	golang.org/x/term v0.28.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -25,11 +25,11 @@ require (
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/oschwald/maxminddb-golang v1.13.1 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
-	github.com/prometheus/common v0.61.0 // indirect
+	github.com/prometheus/common v0.62.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
-	github.com/rs/xid v1.5.0 // indirect
-	github.com/woozymasta/steam v0.1.2 // indirect
-	google.golang.org/protobuf v1.36.3 // indirect
+	github.com/rs/xid v1.6.0 // indirect
+	github.com/woozymasta/steam v0.1.3 // indirect
+	google.golang.org/protobuf v1.36.4 // indirect
 )
 
 replace internal/vars => ./internal/vars

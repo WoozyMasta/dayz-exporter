@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning][].
 ### Removed
 -->
 
+## [0.3.1][] - 2025-01-28
+
+### Changed
+
+* updated `a2s` to v0.2.2 to potentially fix panic if server response with
+  modified `keywords` contains empty entry
+* updated `bercon-cli` to v0.3.1 to prevent race condition in message channel
+
+[0.3.1]: https://github.com/WoozyMasta/dayz-exporter/compare/v0.3.0...v0.3.1
+
 ## [0.3.0][] - 2025-01-16
 
 ### Added

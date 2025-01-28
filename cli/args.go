@@ -83,8 +83,7 @@ For more information on configuration parameters, refer to the example configura
 
 // print version information message and exit
 func printVersion() {
-	fmt.Printf(`
-file:     %s
+	fmt.Printf(`file:     %s
 version:  %s
 commit:   %s
 built:    %s

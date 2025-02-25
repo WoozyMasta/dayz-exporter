@@ -1,4 +1,4 @@
-FROM docker.io/golang:1.23 AS build
+FROM docker.io/golang:1.24 AS build
 
 ARG ARCH=amd64
 ARG VERSION=0.0.0

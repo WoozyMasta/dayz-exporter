@@ -17,10 +17,12 @@ and this project adheres to [Semantic Versioning][].
 
 ### Changed
 
-* Dashboard: fix duplicating statistics panels with mean server ping when
+* update go to 1.24
+* update direct dependencies
+* dashboard: fix duplicating statistics panels with mean server ping when
   the game version is changed
-* Dashboard: add more colors to panels with mean server ping
-* Dashboard: enable auto-refresh every 30 sec by default
+* dashboard: add more colors to panels with mean server ping
+* dashboard: enable auto-refresh every 30 sec by default
 
 ## [0.3.1][] - 2025-01-28
 

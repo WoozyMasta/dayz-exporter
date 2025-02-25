@@ -13,6 +13,15 @@ and this project adheres to [Semantic Versioning][].
 ### Removed
 -->
 
+## Unreleased
+
+### Changed
+
+* Dashboard: fix duplicating statistics panels with mean server ping when
+  the game version is changed
+* Dashboard: add more colors to panels with mean server ping
+* Dashboard: enable auto-refresh every 30 sec by default
+
 ## [0.3.1][] - 2025-01-28
 
 ### Changed

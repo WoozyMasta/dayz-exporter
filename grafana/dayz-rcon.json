@@ -841,20 +841,24 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "dark-green",
                 "value": null
               },
               {
+                "color": "light-green",
+                "value": 0.03
+              },
+              {
                 "color": "yellow",
-                "value": 40
+                "value": 0.04
               },
               {
-                "color": "semi-dark-orange",
-                "value": 60
+                "color": "orange",
+                "value": 0.05
               },
               {
-                "color": "semi-dark-red",
-                "value": 100
+                "color": "red",
+                "value": 0.1
               }
             ]
           },
@@ -877,7 +881,7 @@
         "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
-            "lastNotNull"
+            "mean"
           ],
           "fields": "",
           "values": false
@@ -891,7 +895,7 @@
         {
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "a2s_info_ping_seconds{instance=~\"$instance\"}",
+          "expr": "avg(a2s_info_ping_seconds{instance=~\"$instance\"}) without(version)",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "{{server}}",
@@ -904,7 +908,7 @@
           }
         }
       ],
-      "title": "Servers Query Ping",
+      "title": "Servers Mean Query Ping",
       "type": "stat"
     },
     {
@@ -1995,20 +1999,24 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "dark-green",
                 "value": null
               },
               {
+                "color": "light-green",
+                "value": 0.03
+              },
+              {
                 "color": "yellow",
-                "value": 40
+                "value": 0.04
               },
               {
-                "color": "semi-dark-orange",
-                "value": 70
+                "color": "orange",
+                "value": 0.05
               },
               {
-                "color": "semi-dark-red",
-                "value": 90
+                "color": "red",
+                "value": 0.1
               }
             ]
           },
@@ -2031,7 +2039,7 @@
         "percentChangeColorMode": "inverted",
         "reduceOptions": {
           "calcs": [
-            "lastNotNull"
+            "mean"
           ],
           "fields": "",
           "values": false
@@ -2046,7 +2054,7 @@
           "disableTextWrap": false,
           "editorMode": "code",
           "exemplar": false,
-          "expr": "a2s_info_ping_seconds{instance=~\"$instance\"}",
+          "expr": "avg(a2s_info_ping_seconds{instance=~\"$instance\"}) without (version)",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -2060,7 +2068,7 @@
           }
         }
       ],
-      "title": "Server Query Ping",
+      "title": "Server Mean Query Ping",
       "type": "stat"
     },
     {
@@ -2312,6 +2320,7 @@
       "type": "piechart"
     }
   ],
+  "refresh": "30s",
   "schemaVersion": 40,
   "tags": [],
   "templating": {
@@ -2361,6 +2370,6 @@
   "timezone": "browser",
   "title": "DayZ RCON",
   "uid": "fe21e5fyuc64gc",
-  "version": 3,
+  "version": 4,
   "weekStart": ""
 }

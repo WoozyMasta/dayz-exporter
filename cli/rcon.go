@@ -14,12 +14,13 @@ import (
 )
 
 type connection struct {
-	rcon      *bercon.Connection          // connection to BattleEye RCON server
-	query     *a2s.Client                 // connection to A2S Steam Query
-	collector *bemetrics.MetricsCollector // metrics collector
-	geo       *geoip2.Reader              // reader for geoip DB
-	info      *a2s.Info                   // server information
-	bans      bool                        // flag for enable/disable bans metrics
+	rcon       *bercon.Connection          // connection to BattleEye RCON server
+	query      *a2s.Client                 // connection to A2S Steam Query
+	collector  *bemetrics.MetricsCollector // metrics collector
+	geo        *geoip2.Reader              // reader for geoip DB
+	info       *a2s.Info                   // server information
+	bans       bool                        // flag for enable/disable bans metrics
+	exposeInfo bool                        // flag for enable/disable /info json endpoint
 }
 
 // create connection manager
@@ -66,12 +67,13 @@ func setupConnection(cfg *Config) (*connection, error) {
 
 	// init connection structure
 	connection := connection{
-		rcon:      rcon,
-		query:     query,
-		collector: collector,
-		bans:      cfg.Rcon.Bans,
-		info:      info,
-		geo:       geoDB,
+		rcon:       rcon,
+		query:      query,
+		collector:  collector,
+		bans:       cfg.Rcon.Bans,
+		info:       info,
+		geo:        geoDB,
+		exposeInfo: cfg.Listen.ExposeInfo,
 	}
 
 	// initialize metrics
@@ -96,6 +98,7 @@ func (c *connection) updateServerMetrics() error {
 	}
 
 	c.collector.UpdateServerMetrics(info)
+	c.info = info
 	log.Trace().Msg("Server A2S metrics updated")
 
 	return nil

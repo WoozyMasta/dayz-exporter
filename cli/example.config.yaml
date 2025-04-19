@@ -6,6 +6,9 @@ listen:
   endpoint: /metrics  # HTTP endpoint where Prometheus metrics will be exposed (DAYZ_EXPORTER_LISTEN_ENDPOINT)
   username: metrics  # Username used for all exporter endpoints.
   # password: SomeStrongString  # Password used for all exporter endpoints (Basic Auth disabled if not set).
+  # cors_domains: '*' # Domains for set in Access-Control-Allow-Origin header
+  expose_info: false  # Show A2S info as json on /info endpoint
+  info_auth: false  # Protect /info with Basic Auth
   health_auth: false  # Protect /health, /health/readiness and /health/liveness with Basic Auth
 
 ## Configuration for querying the DayZ server (A2S Query)

@@ -2,11 +2,14 @@ package main
 
 import (
 	_ "embed"
+	"encoding/json"
 	"internal/vars"
 	"net/http"
 	"strings"
 
 	"github.com/rs/zerolog/log"
+	"github.com/woozymasta/a2s/pkg/a2s"
+	"github.com/woozymasta/a2s/pkg/keywords"
 )
 
 //go:embed style.min.css
@@ -50,6 +53,33 @@ func (c *connection) readinessHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// a2s info handler
+func (c *connection) infoHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	if c.info == nil {
+		http.Error(w, "Server info not available yet", http.StatusServiceUnavailable)
+		return
+	}
+
+	response := struct {
+		*a2s.Info
+		Keywords keywords.DayZ `json:"keywords"`
+	}{
+		Info:     c.info,
+		Keywords: *keywords.ParseDayZ(c.info.Keywords),
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		log.Error().Err(err).Msg("Failed to encode server info")
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+}
+
 func (c *connection) rootHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		log.Debug().Str("method", r.Method).Msg("Method not allowed on index page")
@@ -68,6 +98,11 @@ func (c *connection) rootHandler(w http.ResponseWriter, r *http.Request) {
 			"os: " + c.info.Environment.String() + "\n" +
 			"version: " + c.info.Version,
 	)
+
+	infoEndpoint := ""
+	if c.exposeInfo {
+		infoEndpoint = `<li><a href="/info">/info</a>: Show A2S_INFO server info in json;</li>`
+	}
 
 	w.Header().Set("Content-Type", "text/html")
 	w.WriteHeader(http.StatusOK)
@@ -95,6 +130,7 @@ func (c *connection) rootHandler(w http.ResponseWriter, r *http.Request) {
 		<p>This application exposes the following endpoints:</p>
 		<ul>
 			<li><a href="/metrics">/metrics</a>: Exposes Prometheus metrics.</li>
+			` + infoEndpoint + `
 			<li><a href="/health">/health</a>: General health check of the service;</li>
 			<li><a href="/health/liveness">/health/liveness</a>: Checks if the service is alive (RCON connection);</li>
 			<li><a href="/health/readiness">/health/readiness</a>: Checks if the service is ready (all required connections are established);</li>

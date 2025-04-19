@@ -45,7 +45,16 @@ func runApp() {
 	mux.HandleFunc("/health/liveness", connection.livenessHandler)
 	mux.HandleFunc("/health/readiness", connection.readinessHandler)
 
+	if config.Listen.ExposeInfo {
+		mux.HandleFunc("/info", connection.infoHandler)
+	}
+
 	var handler http.Handler = mux
+
+	// enable CORS
+	if config.Listen.CORSDomains != "" {
+		handler = corsMiddleware(handler, config.Listen.CORSDomains)
+	}
 
 	// add basic auth if password is set
 	if config.Listen.Password != "" {

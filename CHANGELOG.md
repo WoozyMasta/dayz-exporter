@@ -15,6 +15,17 @@ and this project adheres to [Semantic Versioning][].
 
 ## Unreleased
 
+## [0.4.0][] - 2025-04-19
+
+### Added
+
+* optional `/info` endpoint with JSON `A2S_INFO` response
+* docs and landing page for example usage of `/info` endpoint,
+  see more info in [DayZ Server Status Landing][landing guide] guide
+  ![landing page]
+* option for set CORS headers
+* go docs for packages
+
 ### Changed
 
 * update go to 1.24
@@ -23,6 +34,12 @@ and this project adheres to [Semantic Versioning][].
   the game version is changed
 * dashboard: add more colors to panels with mean server ping
 * dashboard: enable auto-refresh every 30 sec by default
+* dashboard: fix duplicate metrics if server name changed
+* ci: migrate golangci lint to v2 and fix new issues
+
+[landing guide]: https://github.com/WoozyMasta/dayz-exporter/blob/master/info-page/README.md
+[landing page]: https://raw.githubusercontent.com/WoozyMasta/dayz-exporter/master/info-page/example.jpg
+[0.4.0]: https://github.com/WoozyMasta/dayz-exporter/compare/v0.4.0...v0.3.1
 
 ## [0.3.1][] - 2025-01-28
 

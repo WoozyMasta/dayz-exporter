@@ -1,6 +1,7 @@
 //go:build windows
 // +build windows
 
+// Package service is helper for run process as service in windows
 package service
 
 import (
@@ -31,13 +32,13 @@ func (h *windowsServiceHandler) Execute(_ []string, r <-chan svc.ChangeRequest, 
 	return false, 0
 }
 
-// check is run as windows service
+// IsServiceMode is run as windows service
 func IsServiceMode() bool {
 	isService, _ := svc.IsWindowsService()
 	return isService
 }
 
-// run as windows service
+// RunAsService is run as windows service
 func RunAsService(runApp func()) {
 	err := svc.Run("dayz-exporter", &windowsServiceHandler{runApp: runApp})
 	if err != nil {

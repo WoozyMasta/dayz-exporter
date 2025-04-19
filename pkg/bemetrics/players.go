@@ -7,7 +7,7 @@ import (
 	"github.com/woozymasta/bercon-cli/pkg/beparser"
 )
 
-// initialize bercon players metrics
+// InitPlayerMetrics initialize bercon players metrics
 func (mc *MetricsCollector) InitPlayerMetrics() {
 	labels := mc.customLabels.Keys()
 
@@ -62,7 +62,7 @@ func (mc *MetricsCollector) InitPlayerMetrics() {
 	}
 }
 
-// update bercon players metrics
+// UpdatePlayerMetrics use for update bercon players metrics
 func (mc *MetricsCollector) UpdatePlayerMetrics(players *beparser.Players) {
 	values := mc.customLabels.Values()
 

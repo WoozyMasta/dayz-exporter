@@ -5,7 +5,7 @@ import (
 	"github.com/woozymasta/bercon-cli/pkg/beparser"
 )
 
-// initialize bercon ban metrics
+// InitBansMetrics initialize bercon ban metrics
 func (mc *MetricsCollector) InitBansMetrics() {
 	labels := mc.customLabels.Keys()
 
@@ -50,7 +50,7 @@ func (mc *MetricsCollector) InitBansMetrics() {
 	}
 }
 
-// update ban metrics (GUID and IP)
+// UpdateBansMetrics use for update ban metrics (GUID and IP)
 func (mc *MetricsCollector) UpdateBansMetrics(bans *beparser.Bans) {
 	values := mc.customLabels.Values()
 

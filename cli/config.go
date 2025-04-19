@@ -16,7 +16,7 @@ import (
 
 const defaultConfigPath = "config.yaml"
 
-// main config structure
+// Config represents the main configuration structure for the exporter.
 type Config struct {
 	Labels  map[string]string `yaml:"labels,omitempty" env:"DAYZ_EXPORTER_LABELS"`
 	Logging Logging           `yaml:"logging,omitempty" env:", prefix=DAYZ_EXPORTER_LOG_"`
@@ -26,7 +26,7 @@ type Config struct {
 	Rcon    Rcon              `yaml:"rcon,omitempty" env:", prefix=DAYZ_EXPORTER_RCON_"`
 }
 
-// listen settings for exporter
+// Listen contains settings for the exporter's HTTP server.
 type Listen struct {
 	IP          string `yaml:"ip,omitempty" env:"IP, default=0.0.0.0"`
 	Endpoint    string `yaml:"endpoint,omitempty" env:"ENDPOINT, default=/metrics"`
@@ -39,13 +39,13 @@ type Listen struct {
 	HealthAuth  bool   `yaml:"health_auth,omitempty" env:"HEALTH_AUTH, default=false"`
 }
 
-// Steam A2S query connection settings
+// Query contains Steam A2S query connection settings.
 type Query struct {
 	IP   string `yaml:"ip,omitempty" env:"IP, default=127.0.0.1"`
 	Port int    `yaml:"port,omitempty" env:"PORT, default=27016"`
 }
 
-// BattleEye RCON connection settings
+// Rcon contains BattleEye RCON connection settings.
 type Rcon struct {
 	IP               string `yaml:"ip,omitempty" env:"IP, default=127.0.0.1"`
 	Password         string `yaml:"password" env:"PASSWORD"`
@@ -56,7 +56,7 @@ type Rcon struct {
 	Bans             bool   `yaml:"expose_bans,omitempty" env:"EXPOSE_BANS, default=false"`
 }
 
-// Steam A2S query connection settings
+// Logging contains configuration for log output.
 type Logging struct {
 	Level  string `yaml:"level,omitempty" env:"LEVEL, default=info"`
 	Format string `yaml:"format,omitempty" env:"FORMAT, default=text"`
@@ -157,7 +157,7 @@ func (c *Config) setupLogging() {
 	case "stderr", "err", "2":
 		writer = os.Stderr
 	default:
-		file, err := os.OpenFile(c.Logging.Output, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		file, err := os.OpenFile(c.Logging.Output, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
 		if err != nil {
 			log.Fatal().Err(err).Msgf("Failed to open log file: %s", c.Logging.Output)
 		}

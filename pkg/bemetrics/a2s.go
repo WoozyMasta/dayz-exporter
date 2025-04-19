@@ -6,7 +6,7 @@ import (
 	"github.com/woozymasta/a2s/pkg/keywords"
 )
 
-// initialize a2s server metrics
+// InitServerMetrics initialize a2s server metrics
 func (mc *MetricsCollector) InitServerMetrics() {
 	labels := mc.customLabels.Keys()
 
@@ -61,7 +61,7 @@ func (mc *MetricsCollector) InitServerMetrics() {
 	}
 }
 
-// update a2s server metrics
+// UpdateServerMetrics use for update a2s server metrics
 func (mc *MetricsCollector) UpdateServerMetrics(serverInfo *a2s.Info) {
 	extendedInfo := keywords.ParseDayZ(serverInfo.Keywords)
 

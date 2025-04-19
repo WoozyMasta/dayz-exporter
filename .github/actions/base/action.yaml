@@ -31,9 +31,9 @@ runs:
       run: go generate ./...
 
     - name: golangci-lint
-      uses: golangci/golangci-lint-action@v6
+      uses: golangci/golangci-lint-action@v7
       with:
-        version: v1.60
+        version: v2.0
 
     # for windows can use betteralign ./...
     - name: Check Golang structures

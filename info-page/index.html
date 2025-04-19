@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DayZ Servers Status</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Your Awesome DayZ Server</h1>
+            <p class="subtitle">The best DayZ experience with custom mods, active admins and friendly community</p>
+        </header>
+
+        <div class="servers-grid" id="servers-container">
+            <!-- Servers will be loaded here by JavaScript -->
+        </div>
+
+        <div class="action-button-container">
+            <a href="https://discord.gg/your-invite-link" class="action-button" target="_blank" rel="noopener noreferrer">
+                Join Our Discord Community
+            </a>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <p>Game version: <span id="game-version">2.0</span></p>
+            <p>
+              Contact: <a href="mailto:admin@yourdayzserver.com">admin@yourdayzserver.com</a> |
+              Discord: <a href="https://discord.gg/your-invite-link">community#1234</a>
+            </p>
+            <p>© <span id="current-year">1337</span> Community DayZ Server. This is a non-commercial community server.</p>
+        </div>
+    </footer>
+
+    <!-- Its for test only -->
+    <!-- <script src="servers-mock-test.js"></script> -->
+
+    <script type="text/javascript">
+      const SERVERS = [
+        {
+          name: "My Server 1",
+          apiUrl: "http://127.0.0.1:8098/info", // direct
+          ip: "public.server1.ip"
+        },
+        {
+          name: "My Server 2",
+          apiUrl: "/info/2", // via reverse proxy
+          ip: "public.server2.ip"
+        },
+        {
+          name: "My Server 3",
+          apiUrl: "/info/3",
+          ip: "public.server3.ip"
+        }
+      ];
+    </script>
+    <script src="servers-status.js"></script>
+</body>
+</html>

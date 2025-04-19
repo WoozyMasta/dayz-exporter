@@ -140,7 +140,8 @@ each player or entry in the ban list.
 * **`game`** — Game name;
 * **`os`** — Server platform OS name;
 * **`version`** — Game server version;
-* Any static additional labels can also be installed via the application configuration.
+* Any static additional labels can also be installed via the
+  application configuration.
 
 > [!TIP]  
 > `country` label show country code name only if GeoIP database configured
@@ -148,7 +149,8 @@ each player or entry in the ban list.
 
 ## Endpoints
 
-The DayZ exporter exposes several useful endpoints for monitoring and troubleshooting:
+The DayZ exporter exposes several useful endpoints for monitoring
+and troubleshooting:
 
 * `/`: Provides an overview of the exporter and includes useful information
   about the status of the service, the connected game server,
@@ -164,7 +166,12 @@ The DayZ exporter exposes several useful endpoints for monitoring and troublesho
 * `/health/readiness`: A readiness check endpoint that ensures the service
   is fully operational, i.e., all required connections (like RCON and Steam)
   are established and functional.
-
+* `/info`: Returns A2S server information with parsed keywords in JSON format.
+  This is an optional endpoint that's disabled and doesn't require
+  authentication by default. Useful for automation scenarios, such
+  as displaying real-time player count on your website or integrating
+  with monitoring dashboards.  
+  👉 [Usage example for creating landing page with `/info`.][info-page]
 <!-- markdownlint-disable MD033 -->
 <center>
 
@@ -414,6 +421,7 @@ Your support is greatly appreciated!
 [example.env]: cli/example.env
 [dayz-rcon.json]: grafana/dayz-rcon.json
 [system-process.json]: grafana/system-process.json
+[info-page]: info-page/README.md
 
 [process-exporter]: https://github.com/ncabatoff/process-exporter
 [22457]: https://grafana.com/grafana/dashboards/22457 "DayZ Prometheus Metrics Exporter Dashboard"

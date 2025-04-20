@@ -15,6 +15,15 @@ and this project adheres to [Semantic Versioning][].
 
 ## Unreleased
 
+### Added
+
+* additional checks on app startup
+
+### Changed
+
+* improved logging
+* update yaml config, added missing environment variables in comments
+
 ## [0.4.0][] - 2025-04-19
 
 ### Added

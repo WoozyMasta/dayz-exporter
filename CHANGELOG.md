@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning][].
 ### Removed
 -->
 
-## Unreleased
+## [0.4.1][] - 2025-04-20
 
 ### Added
 
@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning][].
 
 * improved logging
 * update yaml config, added missing environment variables in comments
+
+[0.4.1]: https://github.com/WoozyMasta/dayz-exporter/compare/v0.4.1...v0.4.0
 
 ## [0.4.0][] - 2025-04-19
 

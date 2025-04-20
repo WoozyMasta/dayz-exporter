@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning][].
 ### Removed
 -->
 
+## Unreleased
+
+### Added
+
+* info-page: auto update server stats with custom frequency
+
 ## [0.4.1][] - 2025-04-20
 
 ### Added

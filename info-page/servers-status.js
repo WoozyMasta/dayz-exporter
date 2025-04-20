@@ -8,9 +8,51 @@ const TIME_BACKGROUNDS = {
   sunset: "sunset.jpg"
 };
 
+// Global variables for update control
+let updateInterval = null;
+let isTabActive = true;
+let firstStart = true;
+
+// Event listeners for tab visibility changes
+document.addEventListener('visibilitychange', handleVisibilityChange);
+window.addEventListener('focus', () => { isTabActive = true; startAutoUpdate(); });
+window.addEventListener('blur', () => { isTabActive = false; stopAutoUpdate(); });
+
+function handleVisibilityChange() {
+  isTabActive = !document.hidden;
+  if (isTabActive) {
+    loadServerStatus();
+    startAutoUpdate();
+  } else {
+    stopAutoUpdate();
+  }
+}
+
+function startAutoUpdate() {
+  if (typeof UPDATE_FREQUENCY !== 'undefined' && UPDATE_FREQUENCY > 0) {
+    const frequency = Math.max(UPDATE_FREQUENCY, 1000);
+    const wasInactive = updateInterval === null;
+
+    stopAutoUpdate();
+    if (wasInactive && !firstStart) {
+      loadServerStatus();
+    }
+
+    updateInterval = setInterval(loadServerStatus, frequency);
+    firstStart = false;
+  }
+}
+
+function stopAutoUpdate() {
+  if (updateInterval) {
+    clearInterval(updateInterval);
+    updateInterval = null;
+  }
+}
+
 // Main function to load and display server status
 async function loadServerStatus() {
-  const container = document.getElementById('servers-container');
+  const serverStatuses = [];
 
   for (const server of SERVERS) {
     try {
@@ -25,25 +67,18 @@ async function loadServerStatus() {
         data = await response.json();
       }
 
-      const card = createServerCard(server, data);
-      container.appendChild(card);
-
-      // Update game version in footer
-      if (data.version && document.getElementById('game-version').textContent) {
-        document.getElementById('game-version').textContent = data.version;
-      }
-
-      // Update year in footer
-      document.getElementById('current-year').textContent = new Date().getFullYear();
+      serverStatuses.push({ server, data });
 
     } catch (error) {
       console.error(`Error loading server ${server.name}:`, error);
-      const card = createErrorCard(server);
-      container.appendChild(card);
+      serverStatuses.push({ server, data: null });
     }
   }
 
-  // Обновляем год в футере
+  // Обновляем все карточки после загрузки данных
+  updateAllServerCards(serverStatuses);
+
+  // Обновляем год и версию
   document.getElementById('current-year').textContent = new Date().getFullYear();
 }
 
@@ -51,6 +86,7 @@ async function loadServerStatus() {
 function createServerCard(serverConfig, serverData) {
   const card = document.createElement('div');
   card.className = 'server-card';
+  card.dataset.server = serverConfig.name;
 
   // Set background based on time
   if (serverData.keywords?.time) {
@@ -59,7 +95,10 @@ function createServerCard(serverConfig, serverData) {
     card.style.setProperty('--bg-image', `url('${TIME_BACKGROUNDS[timeOfDay]}')`);
     card.dataset.time = timeOfDay;
   } else {
-    card.style.setProperty('--bg-image', "url('offline.jpg')");
+    // Default to 'afternoon' background if time is missing but server is up
+    const fallbackTime = 'afternoon';
+    card.style.setProperty('--bg-image', `url('${TIME_BACKGROUNDS[fallbackTime]}')`);
+    card.dataset.time = fallbackTime;
   }
 
   // Server name
@@ -95,8 +134,6 @@ function createServerCard(serverConfig, serverData) {
   if (serverData.keywords?.time) {
     const time = parseTime(serverData.keywords.time);
     timeText.textContent = `Time: ${formatTime(time)}`;
-  } else {
-    timeText.textContent = 'Time unknown';
   }
 
   // Server address
@@ -169,11 +206,55 @@ function createServerCard(serverConfig, serverData) {
   return card;
 }
 
+function updateAllServerCards(serverStatuses) {
+  const container = document.getElementById('servers-container');
+
+  let totalPlayers = 0;
+  let totalMaxPlayers = 0;
+  let latestVersion = null;
+
+  for (const { server, data } of serverStatuses) {
+    const existingCard = document.querySelector(`.server-card[data-server="${server.name}"]`);
+
+    let newCard = data
+      ? createServerCard(server, data)
+      : createErrorCard(server);
+
+    newCard.dataset.server = server.name;
+
+    if (existingCard) {
+      container.replaceChild(newCard, existingCard);
+    } else {
+      container.appendChild(newCard);
+    }
+
+    // Collect data for footer
+    if (data?.version) {
+      latestVersion = data.version;
+    }
+
+    if (typeof data?.players === 'number' && typeof data?.max_players === 'number') {
+      totalPlayers += data.players;
+      totalMaxPlayers += data.max_players;
+    }
+  }
+
+  // Update footer info
+  document.getElementById('current-year').textContent = new Date().getFullYear();
+
+  if (latestVersion) {
+    document.getElementById('game-version').textContent = latestVersion;
+  }
+
+  document.getElementById('total-online').textContent = `${totalPlayers}/${totalMaxPlayers}`;
+}
+
 // Create error card when server is unavailable
 function createErrorCard(serverConfig) {
   const card = document.createElement('div');
   card.className = 'server-card';
   card.style.setProperty('--bg-image', "url('offline.jpg')");
+  card.dataset.server = serverConfig.name;
 
   const nameElement = document.createElement('h2');
   nameElement.className = 'server-name';
@@ -218,5 +299,8 @@ function getTimeOfDay(time) {
   return 'evening';
 }
 
-// Load server status when page loads
-document.addEventListener('DOMContentLoaded', () => { loadServerStatus() });
+// Load server status when page loads and start auto-update if enabled
+document.addEventListener('DOMContentLoaded', () => {
+  loadServerStatus();
+  startAutoUpdate();
+});

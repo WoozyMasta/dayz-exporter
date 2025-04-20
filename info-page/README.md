@@ -40,6 +40,7 @@ name and other details, but the key part is defining your servers in the
 
 ```html
 <script type="text/javascript">
+  // Configuration
   const SERVERS = [
     {
       name: "My Server 1",
@@ -57,14 +58,21 @@ name and other details, but the key part is defining your servers in the
       ip: "public.server3.ip"
     }
   ];
+
+  // Update frequency in milliseconds (0 = no auto-update, min 1000ms if enabled)
+  const UPDATE_FREQUENCY = 15000; // 15 seconds, there is no point in setting it more often than scrape_interval
 </script>
 ```
 
-Where:
+Where in `SERVERS`:
 
 * `name`: The display name if the server is unreachable.
 * `apiUrl`: The `/info` endpoint URL for this server’s exporter.
 * `ip`: The public IP shown in the description (port is taken from `/info`).
+
+`UPDATE FREQUENCY` is the frequency in milliseconds for automatically
+updating information on the page. When the page is not in focus -
+updates are frozen.
 
 ## Testing and Development
 

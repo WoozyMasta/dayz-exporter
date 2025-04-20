@@ -31,7 +31,7 @@
 
   <footer class="site-footer">
     <div class="footer-content">
-      <p>Game version: <span id="game-version">2.0</span></p>
+      <p>Total online: <span id="total-online">0/0</span> | Game version: <span id="game-version">2.0</span></p>
       <p>
         Contact: <a href="mailto:admin@yourdayzserver.com">admin@yourdayzserver.com</a> |
         Discord: <a href="https://discord.gg/your-invite-link">community#1234</a>
@@ -44,6 +44,7 @@
   <!-- <script src="servers-mock-test.js"></script> -->
 
   <script type="text/javascript">
+    // Configuration
     const SERVERS = [
       {
         name: "My Server 1",
@@ -61,6 +62,9 @@
         ip: "public.server3.ip"
       }
     ];
+
+    // Update frequency in milliseconds (0 = no auto-update, min 1000ms if enabled)
+    const UPDATE_FREQUENCY = 15000; // 15 seconds, there is no point in setting it more often than scrape_interval
   </script>
   <script src="servers-status.js"></script>
 </body>

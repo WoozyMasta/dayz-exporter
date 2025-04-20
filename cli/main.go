@@ -25,12 +25,12 @@ func runApp() {
 
 	config, err := loadConfig()
 	if err != nil {
-		log.Fatal().Msgf("Load config failed: %s", err)
+		log.Fatal().Err(err).Msg("Load config failed")
 	}
 
 	connection, err := setupConnection(config)
 	if err != nil {
-		log.Fatal().Msgf("Failed to establish connections to RCON port %s:%d", config.Rcon.IP, config.Rcon.Port)
+		log.Fatal().Err(err).Msg("Failed to start application")
 	}
 
 	// create mux
@@ -83,7 +83,7 @@ func runApp() {
 	)
 
 	addr := fmt.Sprintf("%s:%d", config.Listen.IP, config.Listen.Port)
-	log.Info().Msgf("Starting metrics server at %s", addr)
+	log.Info().Str("address", addr).Msgf("Starting metrics server")
 
 	server := &http.Server{
 		Addr:              addr,

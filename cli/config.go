@@ -108,29 +108,29 @@ func loadConfig() (*Config, error) {
 	}
 
 	if config.GeoDB != "" {
-		log.Trace().Msgf("Try find Geo DB file: %s", config.GeoDB)
+		log.Trace().Str("file", config.GeoDB).Msg("Try find Geo DB file")
 		if _, err := os.Stat(config.GeoDB); err != nil {
-			log.Warn().Msgf("Cant open GeoDB file '%s'", config.GeoDB)
+			log.Warn().Str("file", config.GeoDB).Msg("Cant open GeoDB file")
 			config.GeoDB = ""
 		}
 	}
 
-	log.Trace().Msgf("Loaded config: %+v", config)
+	log.Trace().Any("config", config).Msg("Config loaded")
 	return &config, nil
 }
 
 // get path to configuration file from variables, argument or use default
 func getConfigPath() (string, bool) {
 	if path := os.Getenv("DAYZ_EXPORTER_CONFIG_PATH"); path != "" {
-		log.Trace().Msgf("Use config form variable DAYZ_EXPORTER_CONFIG_PATH: %s", path)
+		log.Trace().Str("file", path).Msg("Use config form variable DAYZ_EXPORTER_CONFIG_PATH")
 		return path, true
 	}
 	if len(os.Args) > 1 {
-		log.Trace().Msgf("Use config form argument: %s", os.Args[1])
+		log.Trace().Str("file", os.Args[1]).Msg("Use config form argument")
 		return os.Args[1], true
 	}
 	if _, err := os.Stat(defaultConfigPath); err == nil {
-		log.Trace().Msgf("Use default config path: %s", defaultConfigPath)
+		log.Trace().Str("file", defaultConfigPath).Msg("Use default config path")
 		return defaultConfigPath, true
 	}
 
@@ -142,7 +142,7 @@ func getConfigPath() (string, bool) {
 func (c *Config) setupLogging() {
 	// setup log level
 	if logLevel, err := zerolog.ParseLevel(c.Logging.Level); err == nil {
-		log.Trace().Msgf("Setup log level to: %s", c.Logging.Level)
+		log.Trace().Str("level", c.Logging.Level).Msg("Setup log level")
 		log.Logger = log.Level(logLevel)
 	} else {
 		log.Warn().Msgf("Log level %s unknown, fallback to Info level", c.Logging.Level)
@@ -159,7 +159,7 @@ func (c *Config) setupLogging() {
 	default:
 		file, err := os.OpenFile(c.Logging.Output, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
 		if err != nil {
-			log.Fatal().Err(err).Msgf("Failed to open log file: %s", c.Logging.Output)
+			log.Fatal().Err(err).Str("file", c.Logging.Output).Msg("Failed to open log file")
 		}
 		writer = file
 	}

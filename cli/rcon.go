@@ -28,7 +28,12 @@ func setupConnection(cfg *Config) (*connection, error) {
 	// create connection to BattleEye RCON
 	rcon, err := bercon.Open(fmt.Sprintf("%s:%d", cfg.Rcon.IP, cfg.Rcon.Port), cfg.Rcon.Password)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("open RCON connection: %v", err)
+	}
+
+	rconVersion, err := rcon.Send("version")
+	if err != nil {
+		return nil, fmt.Errorf("get RCON version: %v", err)
 	}
 
 	// setup connection
@@ -44,14 +49,26 @@ func setupConnection(cfg *Config) (*connection, error) {
 	// create connection to Steam A2S Query
 	query, err := a2s.New(cfg.Query.IP, cfg.Query.Port)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("open A2S connection: %v", err)
 	}
 	info, err := query.GetInfo()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("get A2S_INFO: %v", err)
 	}
 
-	log.Info().Msgf("Connected to \"%s\" (%s) server on %s:%d", info.Name, info.Map, cfg.Query.IP, cfg.Query.Port)
+	log.Info().
+		Str("ip", cfg.Query.IP).
+		Int("query port", cfg.Query.Port).
+		Str("version", info.Version).
+		Str("name", info.Name).
+		Str("map", info.Map).
+		Int("rcon port", cfg.Rcon.Port).
+		Str("rcon version", string(rconVersion)).
+		Msg("Connected to server")
+
+	if info.ID != 221100 && info.ID != 1024020 {
+		log.Error().Msg("Game ID on the server does not match DayZ, this looks like a configuration issue")
+	}
 
 	// create bemetrics metrics collector
 	collector := bemetrics.NewMetricsCollector(makeLabels(info, cfg.Labels))
@@ -60,7 +77,7 @@ func setupConnection(cfg *Config) (*connection, error) {
 	if cfg.GeoDB != "" {
 		geoDB, err = geoip2.Open(cfg.GeoDB)
 		if err != nil {
-			log.Error().Msgf("Cant open GeoDB %e", err)
+			return nil, fmt.Errorf("open GeoIP DB: %v", err)
 		}
 		log.Trace().Msgf("GeoDB loaded success")
 	}

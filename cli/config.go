@@ -58,9 +58,11 @@ type Rcon struct {
 
 // Logging contains configuration for log output.
 type Logging struct {
-	Level  string `yaml:"level,omitempty" env:"LEVEL, default=info"`
-	Format string `yaml:"format,omitempty" env:"FORMAT, default=text"`
-	Output string `yaml:"output,omitempty" env:"OUTPUT, default=stdout"`
+	Level     string `yaml:"level,omitempty" env:"LEVEL, default=info"`
+	Format    string `yaml:"format,omitempty" env:"FORMAT, default=text"`
+	Output    string `yaml:"output,omitempty" env:"OUTPUT, default=stdout"`
+	NoMetrics bool   `yaml:"metrics_disabled,omitempty" env:"METRICS_DISABLED"`
+	NoHealth  bool   `yaml:"health_disabled,omitempty" env:"HEALTH_DISABLED"`
 }
 
 // config loader

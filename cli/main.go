@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/rs/zerolog/hlog"
@@ -65,6 +66,13 @@ func runApp() {
 	// hlog.NewHandler -> hlog.AccessHandler -> hlog.RemoteAddrHandler -> ...
 	handler = hlog.NewHandler(log.Logger)(
 		hlog.AccessHandler(func(r *http.Request, status, size int, duration time.Duration) {
+			if config.Logging.NoMetrics && r.URL.Path == "/metrics" {
+				return
+			}
+			if config.Logging.NoHealth && strings.HasPrefix(r.URL.Path, "/health") {
+				return
+			}
+
 			log.Info().
 				Str("method", r.Method).
 				Str("url", r.URL.String()).

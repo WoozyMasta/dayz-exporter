@@ -39,3 +39,5 @@ logging:
   level: info  # Logging level. Options: 'debug', 'info', 'warn', 'error' [DAYZ_EXPORTER_LOG_LEVEL]
   format: text  # Logging format. Options: 'text' (human-readable) or 'json' (structured) [DAYZ_EXPORTER_LOG_FORMAT]
   output: stdout  # Output destination for logs. Options: 'stdout' (default) or 'stderr' or a file path [DAYZ_EXPORTER_LOG_OUTPUT]
+  metrics_disabled: false  # Disable logging for /metrics endpoint [DAYZ_EXPORTER_LOG_METRICS_DISABLED]
+  health_disabled: false  # Disable logging for /health* endpoint [DAYZ_EXPORTER_LOG_HEALTH_DISABLED]

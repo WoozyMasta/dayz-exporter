@@ -329,27 +329,22 @@ sc.exe delete dayz-exporter
 
 ## Lifecycle
 
-> During normal operation and server restarts, seeing
-> `Failed to update metrics` errors in the exporter is completely normal.
-> These log messages are part of standard operation and don't require any
-> intervention. The exporter can't tell the difference between a temporary
-> 1-minute restart and you shutting down the server permanently.
+> Errors like `Failed to update metrics` during game server restarts are
+> normal behavior. The exporter terminates when the server becomes
+> unavailable - this is expected, as it can't distinguish between a
+> temporary 1-minute restart and a permanent shutdown.
 
-The exporter depends on game server availability and maintains connections
-to it via RCON and A2S.  
+The exporter depends on game server availability via RCON and A2S connections.  
 Key points:
 
-* When the game server restarts, the exporter will automatically restart too
-  (this is normal behavior)
-* If the server is unavailable (updating, still starting up, etc.), the
-  exporter will attempt to reconnect
-* To minimize issues (if you don't like the exporter stopping when the
-  server is down), you can:
-  * Configure joint restart/stop for both server and exporter, or set it up
-    as a service dependent on the game server
-  * Only start the exporter after the server is fully up, or just add a
-    simple startup delay
-  * Or... you could just ignore it and move on with your life
+* The exporter **does not attempt to reconnect** - it exits on connection loss
+* Restart is handled by Systemd/Windows services,
+  or container policies (Docker/Podman/K8s)
+* Possible recommendations:
+  * Configure joint restart/stop for both server and exporter
+  * Set up exporter as a service dependent on the game server
+  * Start exporter only after full server initialization or add a simple delay
+  * Or just ignore it
 
 ## Collect metrics
 

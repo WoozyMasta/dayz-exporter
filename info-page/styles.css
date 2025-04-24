@@ -311,6 +311,22 @@
       color: var(--text-secondary);
   }
 
+    .credits {
+    font-size: 0.8em;
+    color: #666;
+    margin-top: 1em;
+    }
+
+    .credits a {
+    color: #777;
+    text-decoration: none;
+    }
+
+    .credits a:hover {
+    text-decoration: underline;
+    color: #555;
+    }
+
   @media (max-width: 768px) {
       .servers-grid {
           grid-template-columns: 1fr;
